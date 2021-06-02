@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request
-import psycopg2
 from database import cur, conn
 #from flask_sqlalchemy import SQLAlchemy
 

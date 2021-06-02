@@ -1,6 +1,6 @@
 image: rbekker87/build-tools:latest
 
-my_app_file_name:
+app:
  script:
  — apt-get update -qy
  — apt-get install -y python-dev python-pip

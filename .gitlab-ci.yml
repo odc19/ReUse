@@ -1,4 +1,5 @@
-image: rbekker87/build-tools:latest
+default:
+  image: ruby:3.0
 
 app:
  script:

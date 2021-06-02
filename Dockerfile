@@ -7,6 +7,7 @@ RUN python3.8 -m venv venv
 RUN . venv/bin/activate
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN apt-get install libpq-dev
 RUN pip install psycopg2
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV FLASK_APP=app.py

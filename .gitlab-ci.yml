@@ -1,0 +1,41 @@
+
+image: rbekker87/build-tools:latest
+
+stages:
+  - ver
+  - init
+  - tests
+  - deploy
+
+ver:
+  stage: ver
+  script:
+    - python --version
+    - whoami
+
+init:
+  stage: init
+  script:
+    - apk add postgresql-dev --no-cache
+    - pip install psycopg2-binary
+    - pip install -r requirements.txt
+
+#run_tests:
+#  stage: tests
+#  script:
+#    - apk add postgresql-dev --no-cache
+#    - pip install psycopg2-binary
+#    - pip install -r requirements.txt
+#    - python tests.py
+
+deploy_production:
+  stage: deploy
+  script:
+    - git remote add heroku https://heroku:$heroku_api_key@git.heroku.com/reuseapp-production.git
+    - git push heroku master
+    - echo "Deployed to Production Server https://reuseapp-production.herokuapp.com"
+  environment:
+    name: production
+    url: https://reuseapp-production.herokuapp.com/
+#  only:
+#    - master

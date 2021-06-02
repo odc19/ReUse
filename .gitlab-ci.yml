@@ -1,7 +1,15 @@
-app:
- script: apt-get update -qy && apt-get install -y python-dev python-pip && pip install -r requirements.txt
+image: rbekker87/build-tools:latest
+
+#app:
+# script: apt-get update -qy && apt-get install -y python-dev python-pip && pip install -r requirements.txt
 # — export MONGOHQ_URL=$MONGO_URL
  
 production:
- type: deploy
- script: apt-get update -qy && apt-get install -y ruby-dev && gem install dpl && dpl — provider=heroku — app=reuseapp-production — api-key=$heroku-api-key
+ stage: deploy
+ script:
+    - apt update && apt install -y ruby git curl
+    - gem install --user-install dpl-heroku
+    - if which ruby > /dev/null && which gem > /dev/null; then PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"; fi
+    - dpl --provider=heroku --app=reuseapp-production --api-key=$heroku_api_key
+
+#apt-get update -qy && apt-get install -y ruby-dev && gem install dpl && dpl — provider=heroku — app=reuseapp-production — api-key=$heroku-api-key

@@ -1,6 +1,3 @@
-default:
-  image: ruby:3.0
-
 app:
  script:
    — apt-get update -qy

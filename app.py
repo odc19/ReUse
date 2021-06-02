@@ -23,6 +23,8 @@ def index_blue(some_text):
     from_text = request.args.get('given_text')
     cur.execute("INSERT INTO dummy (text) VALUES(%s)", (from_text,))
     conn.commit()
+    cur.close()
+    conn.close()
     return render_template("index_blue.html", given_text=some_text + " " + from_text)
 
 

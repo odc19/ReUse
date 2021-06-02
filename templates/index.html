@@ -4,4 +4,10 @@
 
 <br><br> <font color="red" size="50"> Helllooooo </font> <br> <br>
 
+<form action="{{ url_for('index_blue', some_text='123') }}">
+    <input type="text" id="given_text" name="given_text"> <br>
+    Press the button to make the text blue
+    <button type="submit"> Press mee!! </button>
+</form>
+
 {% endblock content %}

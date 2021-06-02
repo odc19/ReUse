@@ -1,4 +1,4 @@
-image: rbekker87/build-tools:latest
+image: maven:3-jdk-11
 
 #app:
 # script: apt-get update -qy && apt-get install -y python-dev python-pip && pip install -r requirements.txt

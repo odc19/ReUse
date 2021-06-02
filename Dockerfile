@@ -6,6 +6,7 @@ COPY . ./reuseapp
 RUN python3.8 -m venv venv
 RUN . venv/bin/activate
 RUN pip install --upgrade pip
+RUN apt install postgresql
 RUN pip install -r requirements.txt
 RUN apt-get install libpq-dev
 RUN pip install psycopg2

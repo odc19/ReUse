@@ -10,6 +10,6 @@ production:
     - apt update && apt install -y ruby git curl
     - gem install --user-install dpl-heroku
     - if which ruby > /dev/null && which gem > /dev/null; then PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"; fi
-    - dpl --provider=heroku --app=reuseapp-production --api-key=$heroku_api_key
+    - dpl --provider=heroku --app=reuseapp-production --api-key=c7334a66-93af-4e71-92e2-f68c84d29c2b
 
 #apt-get update -qy && apt-get install -y ruby-dev && gem install dpl && dpl — provider=heroku — app=reuseapp-production — api-key=$heroku-api-key

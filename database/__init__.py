@@ -5,22 +5,11 @@ import psycopg2
 #database = SQLAlchemy()
 
 
-
-#cur.execute("CREATE TABLE example1 (id SERIAL PRIMARY KEY, name VARCHAR)")
-#cur.execute("INSERT INTO mere (name) VALUES(%s)", ("Hello",))
-#cur.execute("SELECT * FROM mere;")
-#cur.execute("SELECT * FROM mere;")
-#print(cur.fetchall())
-#conn.commit()
-#cur.close()
-#conn.close()
-
-"""
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
     cur.execute("CREATE TABLE donations (id SERIAL PRIMARY KEY, name VARCHAR, title VARCHAR, category VARCHAR, description VARCHAR, location VARCHAR, reserved VARCHAR);")
-    cur.execute("CREATE TABLE requests (id SERIAL PRIMARY KEY, name VARCHAR, description VARCHAR, reserved VARCHAR, );")
+    cur.execute("CREATE TABLE requests (id SERIAL PRIMARY KEY, name VARCHAR, description VARCHAR, reserved VARCHAR);")
     conn.commit()
     cur.close()
     conn.close()
@@ -34,4 +23,3 @@ class Postt(database.Model):
 
     def repr(self):
         return '<Name %r>' % self.id
-"""

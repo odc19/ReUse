@@ -49,7 +49,7 @@ def make_post_class(query_post, post_type):
     location = query_post[5]
     reserved = query_post[6]
 
-    if post_type == "donation":
+    if post_type == "Donation":
         condition = query_post[7]
         condition_description = query_post[8]
         return post_donation(post_id, person_id, title, category, description, location, reserved, condition,
@@ -71,14 +71,14 @@ def index():
     cur.execute(query_word(key_word, req_table, "description"))
     posts = cur.fetchall()
     for post in posts:
-        post_obj = make_post_class(post, "request")
-        posts_with_types.append({"post": post_obj, "type": "request"})
+        post_obj = make_post_class(post, "Request")
+        posts_with_types.append({"post": post_obj, "type": "Request"})
 
     cur.execute(query_word(key_word, don_table, "description"))
     posts = cur.fetchall()
     for post in posts:
-        post_obj = make_post_class(post, "donation")
-        posts_with_types.append({"post": post_obj, "type": "donation"})
+        post_obj = make_post_class(post, "Donation")
+        posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)
@@ -120,7 +120,7 @@ def successful_post(post_type):
     description = request.args.get('post_description')
     category = request.args.get('post_category')
 
-    if post_type == "request":
+    if post_type == "Request":
         cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
                     + str(logged_person_id) + ", '"
                     + title + "', '"
@@ -152,7 +152,7 @@ def view_post(post_id, post_type):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
 
-    if post_type == "donation":
+    if post_type == "Donation":
         table = don_table
         cur.execute("SELECT " + don_fields + " FROM " + table + " WHERE id = " + post_id + ";")
     else:
@@ -161,14 +161,30 @@ def view_post(post_id, post_type):
     post = cur.fetchone()
     post_obj = make_post_class(post, post_type)
 
+    if post_type == "Donation":
+        cur.execute("SELECT DISTINCT name, email FROM interested_donations "
+                    + "INNER JOIN users ON interested_donations.interested_id = users.id "
+                    + "AND interested_donations.post_id = " + post_id + ";")
+    else:
+        cur.execute("SELECT DISTINCT name, email FROM interested_requests "
+                    + "INNER JOIN users ON interested_requests.interested_id = users.id "
+                    + "AND interested_requests.post_id = " + post_id + ";")
+    interested_people = cur.fetchall()
+
+    cur.execute("SELECT name, email FROM users WHERE id = " + str(post_obj.person_id) + ";")
+    owner = cur.fetchone()
+
+    print(owner)
+
     conn.commit()
+
     cur.close()
     conn.close()
 
-    if post_type == "donation":
-        return render_template("view_donation.html", post=post_obj)
+    if post_type == "Donation":
+        return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people)
     else:
-        return render_template("view_request.html", post=post_obj)
+        return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people)
 
 
 @app.route("/pick_new_post")
@@ -184,6 +200,30 @@ def view_donation(post):
 @app.route("/<post>")
 def view_request(post):
     return render_template("view_request.html", post=post)
+
+
+@app.route("/request_sent/<donation_id>")
+def request_sent(donation_id):
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO interested_donations (post_id, interested_id) VALUES ("
+                + str(donation_id) + ", "
+                + str(logged_person_id) + ")")
+    conn.commit()
+    cur.close()
+    conn.close()
+    return index()
+
+
+@app.route("/donation_sent/<request_id>")
+def donation_sent(request_id):
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO interested_requests (post_id, interested_id) VALUES ("
+                + str(request_id) + ", "
+                + str(logged_person_id) + ")")
+    conn.commit()
+    cur.close()
+    conn.close()
+    return index()
 
 
 def get_table_rows(table):

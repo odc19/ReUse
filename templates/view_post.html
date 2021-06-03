@@ -9,7 +9,16 @@
     <br>
     <br>
     <br>
-    <div style="background-color: #E0FFFF; color: black;">
+    <div style="background-color: #E0FFFF; color: black; padding-left: 5em">
+        <br>
+        <br>
+        {% block post_type %}{% endblock post_type %}
+        <br>
+        <br>
+        Owner of the post: {{ owner[0] }}
+        <br>
+        <br>
+        Email: {{ owner[1] }}
         <br>
         <br>
         Title: {{ post['title'] }}
@@ -24,10 +33,21 @@
         Location: {{ post['location'] }}
         {% block other_fields %}{% endblock other_fields %}
         <br>
-        <form action="{{ url_for('index') }}">
+        <br>
+
+        People interested:
+        <ul>
+        {% for interested_person in interested_people %}
+            <li> {{ interested_person[0] }} ; {{ interested_person[1] }} </li>
+        {% endfor %}
+        </ul>
+
+        <br>
+        <br>
+        <form action={% block interested_button %}{% endblock interested_button %}>
             <button class="button" >
                 <p style="color:black">
-                    Request!
+                    {% block submit_button %}{% endblock submit_button %}
                     <br>
                 </p>
             </button>

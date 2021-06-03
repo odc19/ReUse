@@ -20,6 +20,8 @@ don_table = "donations"
 req_fields = "id, person_id, title, category, description, location, reserved"
 don_fields = "id, person_id, title, category, description, location, reserved, condition, condition_description"
 
+logged_person_id = 1
+
 
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
@@ -93,6 +95,57 @@ def index():
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
 
+def connect_to_db():
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    return conn, cur
+
+
+@app.route("/new_request")
+def new_request():
+    return render_template("new_request.html")
+
+
+@app.route("/new_donation")
+def new_donation():
+    return render_template("new_donation.html")
+
+
+@app.route("/successful_post_<post_type>", methods=['GET', 'POST'])
+def successful_post(post_type):
+    conn, cur = connect_to_db()
+
+    title = request.args.get('post_title')
+    location = request.args.get('post_location')
+    description = request.args.get('post_description')
+    category = request.args.get('post_category')
+
+    if post_type == "request":
+        cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
+                    + str(logged_person_id) + ", '"
+                    + title + "', '"
+                    + description + "', '"
+                    + category + "', '"
+                    + location + "')")
+    else:
+        condition = request.args.get('post_condition')
+        condition_description = request.args.get('post_condition_description')
+
+        cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
+                    + "condition_description) VALUES("
+                    + str(logged_person_id) + ", '"
+                    + title + "', '"
+                    + description + "', '"
+                    + category + "', '"
+                    + location + "', '"
+                    + condition + "', '"
+                    + condition_description + "')")
+
+    conn.commit()
+    conn.close()
+    cur.close()
+    return render_template("successful_post.html", post_type=post_type)
+
 
 @app.route("/post_id=<post_id>/post_type=<post_type>")
 def view_post(post_id, post_type):
@@ -116,6 +169,11 @@ def view_post(post_id, post_type):
         return render_template("view_donation.html", post=post_obj)
     else:
         return render_template("view_request.html", post=post_obj)
+
+
+@app.route("/pick_new_post")
+def pick_new_post():
+    return render_template("pick_new_post.html")
 
 
 @app.route("/<post>")

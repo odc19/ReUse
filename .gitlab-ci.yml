@@ -15,4 +15,5 @@ deploy-heroku-production:
     - gem install --user-install dpl-heroku
     - if which ruby > /dev/null && which gem > /dev/null; then PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"; fi
     - dpl --provider=heroku --app=reuseapp-prod --api-key=$HEROKU_API_KEY
+  only: master
 

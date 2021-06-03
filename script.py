@@ -8,15 +8,19 @@ import psycopg2
 
 #from database import database, Postt
 
+#connect to the db
 conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+#create cursor to communicate with the db through connection
 cur = conn.cursor()
-#cur.execute("CREATE TABLE mere (id SERIAL PRIMARY KEY, name VARCHAR);")
+
+cur.execute("CREATE TABLE mere (id SERIAL PRIMARY KEY, name VARCHAR);")
 cur.execute("INSERT INTO mere (name) VALUES(%s)", ("Hello",))
 cur.execute("SELECT * FROM mere;")
-cur.execute("SELECT * FROM mere;")
-#cur.execute()
 print(cur.fetchall())
-conn.commit()
-#cur.close()
 
-#conn.close()
+conn.commit()
+
+#close the cursor to stop leaking
+cur.close()
+#close the connection
+conn.close()

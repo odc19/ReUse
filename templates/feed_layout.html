@@ -5,9 +5,16 @@
         <br>
         <br>
         <br>
-        {% include "feed_post_box.html" %}
-        {% include "feed_post_box.html" %}
-        {% include "feed_post_box.html" %}
-        {% include "feed_post_box.html" %}
+        {% for post in posts %}
+<!--                {% include "feed_post_box.html" %}-->
+                <div style="background-color: #E0FFFF; color: white;">
+                        <form action="{{ url_for('view_post', id=post['id']') }}">
+                                post["title"]
+                                <br>
+                                post["description"]
+                                <button type="submit"> View post </button>
+                        </form>
+                </div>
+        {% endfor %}
 </body>
 </html>

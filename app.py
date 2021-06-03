@@ -59,9 +59,7 @@ def index_blue(some_text):
     res += "\n"
 
     for r in res2:
-        res += r[2] + " " + r[3] 
-
-
+        res += r[2] + " " + r[3]
    # res = res1 + res2
     conn.commit()
     cur.close()

@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 
 import psycopg2
 
+from post import post_donation, post_request
+
 DB_HOST = "ec2-99-80-200-225.eu-west-1.compute.amazonaws.com"
 DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
@@ -15,57 +17,129 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
 req_table = "requests"
 don_table = "donations"
+req_fields = "id, person_id, title, category, description, location, reserved"
+don_fields = "id, person_id, title, category, description, location, reserved, condition, condition_description"
 
-
-def add_examples(cur):
-    cur.execute("INSERT INTO donations (name) VALUES(%s)", ("Monica", "I need some CDs with music", "request",
-                                                            "Hello! I really need some CDs for my son's birthday, with the music...", "Bucharest", ""))
 
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
-    cur.execute(
-        "CREATE TABLE donations (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, category VARCHAR, description VARCHAR, location VARCHAR, reserved VARCHAR);")
-    cur.execute("CREATE TABLE requests (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, description VARCHAR, reserved VARCHAR);")
-
     conn.commit()
     cur.close()
     conn.close()
 
 
 def query_word(word, table, col):
-    return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    if table == req_table:
+        return "SELECT " + req_fields + " FROM " + table + " WHERE " \
+               + col + " LIKE '%" + word + "%' ;"
+    else:
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+
+
+def make_post_class(query_post, post_type):
+    post_id = query_post[0]
+    person_id = query_post[1]
+    title = query_post[2]
+    category = query_post[3]
+    description = query_post[4]
+    location = query_post[5]
+    reserved = query_post[6]
+
+    if post_type == "donation":
+        condition = query_post[7]
+        condition_description = query_post[8]
+        return post_donation(post_id, person_id, title, category, description, location, reserved, condition,
+                             condition_description)
+    else:
+        return post_request(post_id, person_id, title, category, description, location, reserved)
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
-
-
-@app.route("/blue/<some_text>")
-def index_blue(some_text):
+    key_word = request.args.get("search_sentence")
+    if not key_word:
+        key_word = ""
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
-    from_text = request.args.get('given_text')
-    # cur.execute("INSERT INTO dummy (text) VALUES(%s)", (from_text,))
-    cur.execute(query_word(from_text, don_table, "description"))
-    res1 = cur.fetchall()
-    res = ""
-    for r in res1:
-        res += r[2] + " " + r[3]
-    cur.execute(query_word(from_text, req_table, "description"))
-    res2 = cur.fetchall()
 
-    res += "\n"
+    posts_with_types = []
 
-    for r in res2:
-        res += r[2] + " " + r[3]
-   # res = res1 + res2
+    cur.execute(query_word(key_word, req_table, "description"))
+    posts = cur.fetchall()
+    for post in posts:
+        post_obj = make_post_class(post, "request")
+        posts_with_types.append({"post": post_obj, "type": "request"})
+
+    cur.execute(query_word(key_word, don_table, "description"))
+    posts = cur.fetchall()
+    for post in posts:
+        post_obj = make_post_class(post, "donation")
+        posts_with_types.append({"post": post_obj, "type": "donation"})
+
+    for post_with_type in posts_with_types:
+        print(post_with_type)
+        print("\n")
+
     conn.commit()
     cur.close()
     conn.close()
-    # return render_template("index_blue.html", given_text=some_text + " " + from_text)
-    return render_template("index_blue.html", given_text=res)
+
+    return render_template("index.html", posts_with_types=posts_with_types)
+
+
+@app.route("/abc")
+def new_post():
+    return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+
+
+@app.route("/post_id=<post_id>/post_type=<post_type>")
+def view_post(post_id, post_type):
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+
+    if post_type == "donation":
+        table = don_table
+        cur.execute("SELECT " + don_fields + " FROM " + table + " WHERE id = " + post_id + ";")
+    else:
+        table = req_table
+        cur.execute("SELECT " + req_fields + " FROM " + table + " WHERE id = " + post_id + ";")
+    post = cur.fetchone()
+    post_obj = make_post_class(post, post_type)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    if post_type == "donation":
+        return render_template("view_donation.html", post=post_obj)
+    else:
+        return render_template("view_request.html", post=post_obj)
+
+
+@app.route("/<post>")
+def view_donation(post):
+    return render_template("view_donation.html", post=post)
+
+
+@app.route("/<post>")
+def view_request(post):
+    return render_template("view_request.html", post=post)
+
+
+def get_table_rows(table):
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + table + ";")
+    rows_nr = 0
+    row = cur.fetchone()
+    while row is not None:
+        rows_nr += 1
+        row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return rows_nr
 
 
 if __name__ == "__main__":

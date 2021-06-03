@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "new_post.html" %}
 
-</body>
-</html>
+{% block title %}
+Add donation post
+{% endblock title %}
+
+{% block post_button %}
+Post donation
+{% endblock post_button %}
+
+{% block extra_fields %}
+<label> What is the condition of the item? </label> <input id="condition_description" name="condition_description">
+<br>
+<input type="radio" id="new" name="condition" value="new" />
+<label for="new">New</label>
+<br>
+<input type="radio" id="used" name="condition" value="used" />
+<label for="used"> Used </label>
+<br>
+<input type="radio" id="damaged" name="condition" value="damaged" />
+<label for="damaged"> Damaged </label>
+<br>
+<button> Add images </button>
+<br>
+{% endblock extra_fields %}

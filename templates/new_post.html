@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title> {% block title %}{% endblock title %} </title>
+    </head>
 
-</body>
+    <body>
+        <form>
+            <label> Title </label> <input id="post_title" name="post_title">
+            <br>
+            <label> Location </label> <input id="post_location" name="post_location">
+            <br>
+            <label> Description </label> <input id="post_description" name="post_description">
+            <br>
+            <label> Category </label> <input id="post_category" name="post_category">
+            <br>
+            {% block extra_fields %}{% endblock extra_fields %}
+            <button type="submit"> {% block post_button %}{% endblock post_button %} </button>
+        </form>
+    </body>
 </html>

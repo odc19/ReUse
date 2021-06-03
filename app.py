@@ -42,6 +42,16 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/new_request")
+def new_request():
+    return render_template("new_request.html")
+
+
+@app.route("/new_donation")
+def new_donation():
+    return render_template("new_donation.html")
+
+
 @app.route("/blue/<some_text>")
 def index_blue(some_text):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

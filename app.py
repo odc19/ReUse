@@ -16,10 +16,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 req_table = "requests"
 don_table = "donations"
 
+logged_person_id = 1
+
 
 def add_examples(cur):
     cur.execute("INSERT INTO donations (name) VALUES(%s)", ("Monica", "I need some CDs with music", "request",
                                                             "Hello! I really need some CDs for my son's birthday, with the music...", "Bucharest", ""))
+
 
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
@@ -42,6 +45,12 @@ def index():
     return render_template("index.html")
 
 
+def connect_to_db():
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    return conn, cur
+
+
 @app.route("/new_request")
 def new_request():
     return render_template("new_request.html")
@@ -52,8 +61,39 @@ def new_donation():
     return render_template("new_donation.html")
 
 
-@app.route("/successful_post_<post_type>")
+@app.route("/successful_post_<post_type>", methods=['GET', 'POST'])
 def successful_post(post_type):
+    conn, cur = connect_to_db()
+
+    title = request.args.get('post_title')
+    location = request.args.get('post_location')
+    description = request.args.get('post_description')
+    category = request.args.get('post_category')
+
+    if post_type == "request":
+        cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
+                    + str(logged_person_id) + ", '"
+                    + title + "', '"
+                    + description + "', '"
+                    + category + "', '"
+                    + location + "')")
+    else:
+        condition = request.args.get('post_condition')
+        condition_description = request.args.get('post_condition_description')
+
+        cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
+                    + "condition_description) VALUES("
+                    + str(logged_person_id) + ", '"
+                    + title + "', '"
+                    + description + "', '"
+                    + category + "', '"
+                    + location + "', '"
+                    + condition + "', '"
+                    + condition_description + "')")
+
+    conn.commit()
+    conn.close()
+    cur.close()
     return render_template("successful_post.html", post_type=post_type)
 
 

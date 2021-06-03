@@ -6,14 +6,30 @@
     </head>
 
     <body>
-        <form action={% block submit_action %}{% endblock submit_action %}>
+        <form action={% block submit_action %}{% endblock submit_action %} method="get">
             <label> Title </label> <input id="post_title" name="post_title">
             <br>
             <label> Location </label> <input id="post_location" name="post_location">
             <br>
             <label> Description </label> <input id="post_description" name="post_description">
             <br>
-            <label> Category </label> <input id="post_category" name="post_category">
+            <label> Category </label>
+            <select name="post_category" id="post_category">
+                <option value="clothes"> Clothes </option>
+                <option value="books"> Books </option>
+                <option value="toys"> Toys</option>
+                <option value="sports"> Sports </option>
+                <option value="gaming"> Gaming </option>
+                <option value="school"> School </option>
+                <option value="furniture"> Furniture </option>
+                <option value="perishables"> Perishables </option>
+                <option value="kitchen ware"> Kitchen ware </option>
+                <option value="self care"> Self care </option>
+                <option value="cars"> Cars </option>
+                <option value="electronics"> Electronics </option>
+                <option value="gardening"> Gardening </option>
+                <option value="other"> Other </option>
+            </select>
             <br>
             {% block extra_fields %}{% endblock extra_fields %}
             <button type="submit"> {% block post_button %}{% endblock post_button %} </button>

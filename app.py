@@ -67,18 +67,23 @@ def index():
     cur = conn.cursor()
 
     posts_with_types = []
+    posts_type = request.args.get('posts_type')
 
-    cur.execute(query_word(key_word, req_table, "description"))
-    posts = cur.fetchall()
-    for post in posts:
-        post_obj = make_post_class(post, "Request")
-        posts_with_types.append({"post": post_obj, "type": "Request"})
+    print(posts_type)
 
-    cur.execute(query_word(key_word, don_table, "description"))
-    posts = cur.fetchall()
-    for post in posts:
-        post_obj = make_post_class(post, "Donation")
-        posts_with_types.append({"post": post_obj, "type": "Donation"})
+    if posts_type == "all" or posts_type == "request":
+        cur.execute(query_word(key_word, req_table, "description"))
+        posts = cur.fetchall()
+        for post in posts:
+            post_obj = make_post_class(post, "Request")
+            posts_with_types.append({"post": post_obj, "type": "Request"})
+
+    if posts_type == "all" or posts_type == "donation":
+        cur.execute(query_word(key_word, don_table, "description"))
+        posts = cur.fetchall()
+        for post in posts:
+            post_obj = make_post_class(post, "Donation")
+            posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)

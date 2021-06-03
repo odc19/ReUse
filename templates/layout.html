@@ -2,10 +2,20 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>First page</title>
+        <title> First page </title>
     </head>
     <body>
-        <h1> TITLUUUU </h1>
+        <style>
+        h1 {text-align: center;}
+        </style>
+        <h1> ReUse </h1>
+        <br>
         {% block content %}{% endblock content %}
+        <br>
+        <br>
+        <br>
+        <h1 style="color:red;font-size:20px;"> <i> Feed: </i></h1>
+        {% include "feed_post_box.html" %}
     </body>
 </html>
+

@@ -16,17 +16,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 req_table = "requests"
 don_table = "donations"
 
-
-def add_examples(cur):
-    cur.execute("INSERT INTO donations (name) VALUES(%s)", ("Monica", "I need some CDs with music", "request",
-                                                            "Hello! I really need some CDs for my son's birthday, with the music...", "Bucharest", ""))
-
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
-    cur.execute(
-        "CREATE TABLE donations (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, category VARCHAR, description VARCHAR, location VARCHAR, reserved VARCHAR);")
-    cur.execute("CREATE TABLE requests (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, description VARCHAR, reserved VARCHAR);")
+    #cur.execute(
+    #    "CREATE TABLE donations (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, category VARCHAR, description VARCHAR, location VARCHAR, reserved VARCHAR);")
+    #cur.execute("CREATE TABLE requests (id SERIAL PRIMARY KEY, person_id INT, title VARCHAR, description VARCHAR, reserved VARCHAR);")
 
     conn.commit()
     cur.close()
@@ -41,6 +36,20 @@ def query_word(word, table, col):
 def index():
     return render_template("index.html")
 
+def get_table_rows(table):
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM " + table + ";")
+    rows_nr = 0
+    rows = cur.fetchone()
+    while row is not None:
+        rows_nr += 1
+        row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return rows_nr
+
+
 
 @app.route("/blue/<some_text>")
 def index_blue(some_text):
@@ -48,7 +57,13 @@ def index_blue(some_text):
     cur = conn.cursor()
     from_text = request.args.get('given_text')
     # cur.execute("INSERT INTO dummy (text) VALUES(%s)", (from_text,))
+    res = "?????!!!!"
     cur.execute(query_word(from_text, don_table, "description"))
+
+
+    cur.execute(query_word(from_text, req_table, "description"))
+
+    """
     res1 = cur.fetchall()
     res = ""
     for r in res1:
@@ -61,6 +76,7 @@ def index_blue(some_text):
     for r in res2:
         res += r[2] + " " + r[3]
    # res = res1 + res2
+   """
     conn.commit()
     cur.close()
     conn.close()

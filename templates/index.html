@@ -2,12 +2,14 @@
 
 {% block content %}
 
-<br><br> <font color="red" size="50"> Helllooooo </font> <br> <br>
-
+<style>
+        h1 {text-align: center;}
+</style>
+<h1>
 <form action="{{ url_for('index_blue', some_text='123') }}">
     <input type="text" id="given_text" name="given_text"> <br>
-    Press the button to make the text blue
-    <button type="submit"> Press mee!! </button>
+    <button type="submit"> Search! </button>
 </form>
+</h1>
 
 {% endblock content %}

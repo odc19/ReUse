@@ -52,6 +52,11 @@ def new_donation():
     return render_template("new_donation.html")
 
 
+@app.route("/successful_post_<post_type>")
+def successful_post(post_type):
+    return render_template("successful_post.html", post_type=post_type)
+
+
 @app.route("/blue/<some_text>")
 def index_blue(some_text):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

@@ -23,3 +23,7 @@ Post donation
 <button> Add images </button>
 <br>
 {% endblock extra_fields %}
+
+{% block submit_action %}
+{{ url_for('successful_post', post_type='donation') }}
+{% endblock submit_action %}

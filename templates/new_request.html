@@ -7,3 +7,7 @@ Add request post
 {% block post_button %}
 Post request
 {% endblock post_button %}
+
+{% block submit_action %}
+{{ url_for('successful_post', post_type='request') }}
+{% endblock submit_action %}

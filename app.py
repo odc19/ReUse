@@ -27,7 +27,6 @@ def init_table_posts():
     cur.close()
     conn.close()
 
-
 def query_word(word, table, col):
     return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
 
@@ -36,12 +35,16 @@ def query_word(word, table, col):
 def index():
     return render_template("index.html")
 
+@app.route("/")
+def new_post():
+    return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+
 def get_table_rows(table):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
     cur.execute("SELECT * FROM " + table + ";")
     rows_nr = 0
-    rows = cur.fetchone()
+    row = cur.fetchone()
     while row is not None:
         rows_nr += 1
         row = cur.fetchone()
@@ -49,19 +52,23 @@ def get_table_rows(table):
     conn.close()
     return rows_nr
 
-
-
 @app.route("/blue/<some_text>")
 def index_blue(some_text):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
     from_text = request.args.get('given_text')
     # cur.execute("INSERT INTO dummy (text) VALUES(%s)", (from_text,))
-    res = "?????!!!!"
+    res = ""
     cur.execute(query_word(from_text, don_table, "description"))
+    rows = get_table_rows(don_table)
+    # Pana aici e bine
+    if rows > 1:
+        row = cur.fetchone()
+        res1 = row
+        row = cur.fetchone()
+        res2 = row
 
-
-    cur.execute(query_word(from_text, req_table, "description"))
+    #cur.execute(query_word(from_text, req_table, "description"))
 
     """
     res1 = cur.fetchall()

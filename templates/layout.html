@@ -11,11 +11,10 @@
         <h1> ReUse </h1>
         <br>
         {% block content %}{% endblock content %}
+        {% include "feed_layout.html" %}
         <br>
         <br>
         <br>
-        <h1 style="color:red;font-size:20px;"> <i> Feed: </i></h1>
-        {% include "feed_post_box.html" %}
     </body>
 </html>
 

@@ -17,10 +17,10 @@
         <br>
         {% for post_with_type in posts_with_types %}
                 <div style="background-color: #E0FFFF; padding: 5em 10em">
-                        <form action="{{ url_for('view_post', post_id=post_with_type['post'][0], post_type=post_with_type['type']) }}">
-                                Title: {{ post_with_type['post'][2] }}
+                            <form action="{{ url_for('view_post', post_id=post_with_type['post']['id'], post_type=post_with_type['type']) }}">
+                                Title: {{ post_with_type['post']['title'] }}
                                 <br>
-                                Description: {{ post_with_type['post'][3] }}
+                                Description: {{ post_with_type['post']['description'] }}
                                 <button type="submit"> View post </button>
                         </form>
                 </div>

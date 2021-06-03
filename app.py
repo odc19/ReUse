@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 
 import psycopg2
 
+from post import post_donation, post_request
+
 DB_HOST = "ec2-99-80-200-225.eu-west-1.compute.amazonaws.com"
 DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
@@ -15,6 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
 req_table = "requests"
 don_table = "donations"
+req_fields = "id, person_id, title, category, description, location, reserved"
+don_fields = "id, person_id, title, category, description, location, reserved, condition, condition_description"
 
 
 def init_table_posts():
@@ -26,10 +30,30 @@ def init_table_posts():
 
 
 def query_word(word, table, col):
-    # if table == req_table:
-    #     return "SELECT (id, person_id, title, category, description, location, ) FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
-    # else:
-        return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    if table == req_table:
+        return "SELECT " + req_fields + " FROM " + table + " WHERE " \
+               + col + " LIKE '%" + word + "%' ;"
+    else:
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+
+
+def make_post_class(query_post, post_type):
+    post_id = query_post[0]
+    person_id = query_post[1]
+    title = query_post[2]
+    category = query_post[3]
+    description = query_post[4]
+    location = query_post[5]
+    reserved = query_post[6]
+
+    if post_type == "donation":
+        condition = query_post[7]
+        condition_description = query_post[8]
+        return post_donation(post_id, person_id, title, category, description, location, reserved, condition,
+                             condition_description)
+    else:
+        return post_request(post_id, person_id, title, category, description, location, reserved)
 
 
 @app.route("/")
@@ -45,12 +69,14 @@ def index():
     cur.execute(query_word(key_word, req_table, "description"))
     posts = cur.fetchall()
     for post in posts:
-        posts_with_types.append({"post": post, "type": "request"})
+        post_obj = make_post_class(post, "request")
+        posts_with_types.append({"post": post_obj, "type": "request"})
 
     cur.execute(query_word(key_word, don_table, "description"))
     posts = cur.fetchall()
     for post in posts:
-        posts_with_types.append({"post": post, "type": "donation"})
+        post_obj = make_post_class(post, "donation")
+        posts_with_types.append({"post": post_obj, "type": "donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)
@@ -75,18 +101,31 @@ def view_post(post_id, post_type):
 
     if post_type == "donation":
         table = don_table
-        print("DONATION\n")
+        cur.execute("SELECT " + don_fields + " FROM " + table + " WHERE id = " + post_id + ";")
     else:
         table = req_table
-        print("REQUEST\n")
-    cur.execute("SELECT * FROM " + table + " WHERE id = " + post_id + ";")
+        cur.execute("SELECT " + req_fields + " FROM " + table + " WHERE id = " + post_id + ";")
     post = cur.fetchone()
+    post_obj = make_post_class(post, post_type)
 
     conn.commit()
     cur.close()
     conn.close()
 
-    return render_template("view_post.html", post=post, post_type=post_type)
+    if post_type == "donation":
+        return render_template("view_donation.html", post=post_obj)
+    else:
+        return render_template("view_request.html", post=post_obj)
+
+
+@app.route("/<post>")
+def view_donation(post):
+    return render_template("view_donation.html", post=post)
+
+
+@app.route("/<post>")
+def view_request(post):
+    return render_template("view_request.html", post=post)
 
 
 def get_table_rows(table):

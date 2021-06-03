@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> {{ post[2] }} </title>
-</head>
-<body>
-    Title: {{ post[2] }}
-    <br>
-    Description:
-    {{ post[4] }}
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title> {{ post['title'] }} </title>
+    </head>
+    <body>
+        Title: {{ post['title'] }}
+        <br>
+        Description: {{ post['description'] }}
+        <br>
+        Category: {{ post['category'] }}
+        <br>
+        Location: {{ post['location'] }}
+        {% block other_fields %}{% endblock other_fields %}
+        <br>
+    </body>
 </html>

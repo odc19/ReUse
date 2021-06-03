@@ -3,3 +3,4 @@ Flask==2.0.1
 Flask-SQLAlchemy==2.5.1 
 SQLAlchemy==1.4.17
 psycopg2==2.8.6
+pytest==6.0.2

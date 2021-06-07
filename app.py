@@ -192,6 +192,21 @@ def view_post(post_id, post_type):
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people)
 
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+
 @app.route("/pick_new_post")
 def pick_new_post():
     return render_template("pick_new_post.html")

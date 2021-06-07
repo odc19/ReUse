@@ -36,14 +36,14 @@
         h1 {text-align: center;}
     </style>
     <h1> Make a post </h1>
-  <form action="{{ url_for('new_donation') }}">
     <div class="center">
-        <button class="button" type="submit" style="margin-right: 100px;"> Donate </button>
+        <form action="{{ url_for('new_donation') }}">
+            <button class="button" type="submit" style="margin-right: 100px;"> Donate </button>
+        </form>
         <form action="{{ url_for('new_request') }}">
-          <button class="button" type="submit"> Request </button>
+            <button class="button" type="submit"> Request </button>
         </form>
     </div>
-  </form>
 
 </body>
 </html>

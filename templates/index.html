@@ -7,18 +7,18 @@
 </style>
 <h1>
     <form action="{{ url_for('index') }}">
-        <input type="text" id="search_sentence" name="search_sentence">
+        <input type="text" id="search_sentence" name="search_sentence" placeholder="Search..">
         <br>
         <select name="posts_type" id="posts_type">
             <option value="all"> All </option>
             <option value="donation"> Donation </option>
             <option value="request"> Request </option>
         </select>
-        <button type="submit"> Search! </button>
+        <button class="button" type="submit"> Search! </button>
     </form>
-    <form action="{{ url_for('pick_new_post') }}">
-        <button type="submit"> Add a post! </button>
-    </form>
+        <form action="{{ url_for('pick_new_post') }}">
+            <button class="button" type="submit"><i class="material-icons" style="font-size:18px;">add_circle</i> Add a post!</button>
+        </form>
 </h1>
 
 {% endblock content %}

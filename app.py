@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
 from flask_hashing import Hashing
 import psycopg2
+from flask_bcrypt import Bcrypt
 
 from post import post_donation, post_request
 from models import User
@@ -14,8 +15,9 @@ DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
 
 app = Flask(__name__)
-hashing = Hashing(app)
-hashing.init_app(app)
+# hashing = Hashing(app)
+bcrypt = Bcrypt(app)
+# hashing.init_app(app)
 app.secret_key = 'if!9gYPfde_&)Go'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -252,7 +254,8 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('signup'))
 
-    hashed_password = hashing.hash_value(password, salt='@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.')
+    password.encode('utf-8')
+    hashed_password = bcrypt.generate_password_hash(password.encode('utf-8'), salt).decode("utf-8")
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO users (name, password, email) VALUES('"
                 + name + "', '"
@@ -274,7 +277,8 @@ def login_post():
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
-    if not user or not hashing.check_value(user.password, password, salt='@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.'):
+    password.encode('utf-8')
+    if not user or not bcrypt.check_password_hash(user.password, password.encode('utf-8')): # , '@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.'):
         flash('Please check your login details and try again.')
         return redirect(url_for('login'))
 
@@ -302,14 +306,14 @@ def pick_new_post():
     return render_template("pick_new_post.html")
 
 
-@app.route("/<post>")
-def view_donation(post):
-    return render_template("view_donation.html", post=post)
-
-
-@app.route("/<post>")
-def view_request(post):
-    return render_template("view_request.html", post=post)
+# @app.route("/<post>")
+# def view_donation(post):
+#     return render_template("view_donation.html", post=post)
+#
+#
+# @app.route("/<post>")
+# def view_request(post):
+#     return render_template("view_request.html", post=post)
 
 
 @app.route("/request_sent/<donation_id>")

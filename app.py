@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
-
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import current_user, LoginManager, login_user, logout_user, login_required
 import psycopg2
 
 from post import post_donation, post_request
+from models import User
 
 DB_HOST = "ec2-99-80-200-225.eu-west-1.compute.amazonaws.com"
 DB_NAME = "d8t87nco360qgb"
@@ -10,6 +11,17 @@ DB_USER = "tkkjfwcewyiyyy"
 DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
 app = Flask(__name__)
+app.secret_key = 'if!9gYPfde_&)Go'
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    return User.get(user_id)
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
@@ -112,6 +124,7 @@ def new_request():
 
 
 @app.route("/new_donation")
+@login_required
 def new_donation():
     return render_template("new_donation.html")
 
@@ -190,6 +203,71 @@ def view_post(post_id, post_type):
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people)
+
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+@app.route('/signup', methods=['POST'])
+def signup_post():
+    email = request.form.get('email')
+    name = request.form.get('name')
+    password = request.form.get('password')
+
+    user = User.get_by_email(email)
+
+    if user:
+        flash('Email address already exists')
+        return redirect(url_for('signup'))
+
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO users (name, email) VALUES('"
+                + name + "', '"
+                + email + "')")
+    conn.commit()
+    conn.close()
+    cur.close()
+    return redirect(url_for('login'))
+
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
+
+    user =  User.get_by_email(email)
+
+    # check if the user actually exists
+    # take the user-supplied password, hash it, and compare it to the hashed password in the database
+    if not user:
+        """or not check_password_hash(user.password, password)"""
+        flash('Please check your login details and try again.')
+        return redirect(url_for('login'))
+
+    # if the above check passes, then we know the user has the right credentials
+    login_user(user, remember=remember)
+    return redirect(url_for('profile'))
+
+
+@app.route("/profile")
+@login_required
+def profile():
+    return render_template('profile.html', name=current_user.name)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 @app.route("/pick_new_post")

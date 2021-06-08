@@ -275,6 +275,7 @@ def logout():
 
 
 @app.route("/pick_new_post")
+@login_required
 def pick_new_post():
     return render_template("pick_new_post.html")
 

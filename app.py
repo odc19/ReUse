@@ -96,9 +96,50 @@ def index():
     return render_template("index.html", posts_with_types=posts_with_types)
 
 
+@app.route("/posts_by_category/", methods=['GET', 'POST'])
+def posts_by_category():
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+
+    category = request.form["category"]
+    category2 = request.form.category()
+    category3 = request.args.get("category")
+    post_with_types = []
+
+    print("category\n")
+    #print(category)
+    #print(category2)
+    #print(category3)
+    print("end\n")
+
+    cur.execute(query_word(category, req_table, "category"))
+    posts = cur.fetchall()
+    for post in posts:
+        post_obj = make_post_class(post, "Request")
+        post_with_types.append({"post": post_obj, "type": "Request"})
+
+    cur.execute(query_word(category, don_table, "category"))
+    posts = cur.fetchall()
+    for post in posts:
+        post_obj = make_post_class(post, "Donation")
+        post_with_types.append({"post": post_obj, "type": "Donation"})
+
+    for post in post_with_types:
+        print(post)
+        print("\n")
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return render_template("index.html", posts_with_types=post_with_types)
+
+
 @app.route("/abc")
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

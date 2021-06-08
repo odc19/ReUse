@@ -19,6 +19,26 @@
         <form action="{{ url_for('pick_new_post') }}">
             <button class="button" type="submit"><i class="material-icons" style="font-size:18px;">add_circle</i> Add a post!</button>
         </form>
+
+    <br>
+        <form action="{{ url_for('posts_by_category', method='POST') }}">
+            <input class="button" name = "category" id = "category" value = "clothes" type="submit">
+            <input class="button" name = "category" id = "category" value = "books" type="submit">
+            <input class="button" name = "category" id = "category" value = "toys" type="submit">
+            <input class="button" name = "category" id = "category" value = "sports" type="submit">
+            <input class="button" name = "category" id = "category" value = "gaming" type="submit">
+            <input class="button" name = "category" id = "category" value = "school" type="submit">
+            <input class="button" name = "category" id = "category" value = "furniture" type="submit">
+            <br>
+            <input class="button" name = "category" id = "category" value = "perishables" type="submit">
+            <input class="button" name = "category" id = "category" value = "kitchen ware" type="submit">
+            <input class="button" name = "category" id = "category" value = "self care" type="submit">
+            <input class="button" name = "category" id = "category" value = "cars" type="submit">
+            <input class="button" name = "category" id = "category" value = "electronics" type="submit">
+            <input class="button" name = "category" id = "category" value = "gardening" type="submit">
+            <input class="button" name = "category" id = "category" value = "other" type="submit">
+        </form>
+
 </h1>
 
 {% endblock content %}

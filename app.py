@@ -227,7 +227,13 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('signup'))
 
-    # (TODO) add user
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO users (name, email) VALUES('"
+                + name + "', '"
+                + email + "')")
+    conn.commit()
+    conn.close()
+    cur.close()
     return redirect(url_for('login'))
 
 

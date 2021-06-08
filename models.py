@@ -6,20 +6,11 @@ DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
 DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
-#req_fields = "user_id, email, password, name, authenticated"
-
 req_fields = "id, name, email, password"
 table = "users"
 
 
 class User:
-
-    """def __init__(self, user_id, email, password, name, authenticated):
-        self.user_id = user_id
-        self.email = email
-        self.password = password
-        self.name = name
-        self.authenticated = authenticated"""
 
     def __init__(self, id, name, email, rating, password):
         self.user_id = id
@@ -52,12 +43,6 @@ class User:
         cur.close()
         conn.close()
 
-        """user_id = user[0]
-        email = user[1]
-        password = user[2]
-        name = user[3]
-        authenticated = user[4]"""
-
         user_id = user[0]
         name = user[1]
         email = user[2]
@@ -81,10 +66,6 @@ class User:
             return None
 
         user = users[0]
-        """user_id = user[0]
-        email = user[1]
-        password = user[2]
-        name = user[3]"""
         user_id = user[0]
         name = user[1]
         email = user[2]

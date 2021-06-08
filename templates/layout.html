@@ -8,7 +8,8 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
         <style>
-            body {
+            body, html {
+                    height: 100%;
                     background-color: rgb(208, 225, 206);
             }
             h1 {
@@ -75,7 +76,7 @@
     </section>
         <h1 style="font-size: 40px;"> ReUse </h1>
 
-        <div class="hero-body" style="background-color: rgb(208, 225, 206)">
+        <div class="hero-body" style="height: 100%; background-color: rgb(208, 225, 206)">
             <br>
             {% block content %}{% endblock content %}
             <br>

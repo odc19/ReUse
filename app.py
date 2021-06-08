@@ -37,8 +37,6 @@ don_table = "donations"
 req_fields = "id, person_id, title, category, description, location, reserved"
 don_fields = "id, person_id, title, category, description, location, reserved, condition, condition_description"
 
-logged_person_id = 1
-
 
 def init_table_posts():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
@@ -145,7 +143,7 @@ def successful_post(post_type):
 
     if post_type == "Request":
         cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
-                    + str(logged_person_id) + ", '"
+                    + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
                     + category + "', '"
@@ -156,7 +154,7 @@ def successful_post(post_type):
 
         cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
                     + "condition_description) VALUES("
-                    + str(logged_person_id) + ", '"
+                    + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
                     + category + "', '"
@@ -296,7 +294,7 @@ def request_sent(donation_id):
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO interested_donations (post_id, interested_id) VALUES ("
                 + str(donation_id) + ", "
-                + str(logged_person_id) + ")")
+                + str(current_user.user_id) + ")")
     conn.commit()
     cur.close()
     conn.close()
@@ -308,7 +306,7 @@ def donation_sent(request_id):
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO interested_requests (post_id, interested_id) VALUES ("
                 + str(request_id) + ", "
-                + str(logged_person_id) + ")")
+                + str(current_user.user_id) + ")")
     conn.commit()
     cur.close()
     conn.close()

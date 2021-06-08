@@ -3,5 +3,18 @@
 {% block title %} My requests {% endblock title%}
 
 {% block content %}
-    My requests content
+    <h1> My requests </h1>
+    {% for my_request_with_type in my_requests_with_types %}
+        <div style="background-color: #ECF3EB; padding: 1em 3em; width: 70%;margin-left: auto; margin-right: auto; border-radius: 4px;">
+            <form action="{{ url_for('view_my_post', my_post_id=my_request_with_type['post']['id'], my_post_type=my_request_with_type['type']) }}">
+                <h2> {{ my_request_with_type['type'] }} </h2>
+                Title: {{ my_request_with_type['post']['title'] }}
+                <br>
+                Description: {{ my_request_with_type['post']['description'] }}
+                <br>
+                <button class="button" type="submit"> View request </button>
+            </form>
+        </div>
+        <br>
+    {% endfor %}
 {% endblock content %}

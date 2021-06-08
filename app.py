@@ -166,7 +166,19 @@ def successful_post(post_type):
     description = request.args.get('post_description')
     category = request.args.get('post_category')
 
-    if post_type == "Request":
+    print("\n")
+    print(current_user.user_id)
+    print("\n")
+    print(title)
+    print("\n")
+    print(description)
+    print("\n")
+    print(category)
+    print("\n")
+    print(location)
+    print("\n")
+
+    if post_type == "request":
         cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
                     + str(current_user.user_id) + ", '"
                     + title + "', '"
@@ -231,6 +243,38 @@ def view_post(post_id, post_type):
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people)
+
+
+@app.route("/view_my_post_<my_post_id>_<my_post_type>")
+def view_my_post(my_post_id, my_post_type):
+    conn, cur = connect_to_db()
+    if my_post_type == "Request":
+        cur.execute("SELECT " + req_fields + " FROM " + req_table + " WHERE id = " + my_post_id + ";")
+    else:
+        cur.execute("SELECT " + don_fields + " FROM " + don_fields + " WHERE id = " + my_post_id + ";")
+
+    my_post = cur.fetchone()
+    my_post_obj = make_post_class(my_post, my_post_type)
+
+    if my_post_type == "Donation":
+        cur.execute("SELECT DISTINCT name, email FROM interested_donations "
+                    + "INNER JOIN users ON interested_donations.interested_id = users.id "
+                    + "AND interested_donations.post_id = " + my_post_id + ";")
+    else:
+        cur.execute("SELECT DISTINCT name, email FROM interested_requests "
+                    + "INNER JOIN users ON interested_requests.interested_id = users.id "
+                    + "AND interested_requests.post_id = " + my_post_id + ";")
+    interested_people = cur.fetchall()
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    if my_post_type == "Request":
+        return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people)
+    else:
+        return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people)
 
 
 @app.route("/login")
@@ -307,16 +351,6 @@ def pick_new_post():
     return render_template("pick_new_post.html")
 
 
-# @app.route("/<post>")
-# def view_donation(post):
-#     return render_template("view_donation.html", post=post)
-#
-#
-# @app.route("/<post>")
-# def view_request(post):
-#     return render_template("view_request.html", post=post)
-
-
 @app.route("/request_sent/<donation_id>")
 def request_sent(donation_id):
     conn, cur = connect_to_db()
@@ -348,7 +382,23 @@ def my_donations():
 
 @app.route("/my_requests")
 def my_requests():
-    return render_template("my_requests.html")
+    conn, cur = connect_to_db()
+    cur.execute("SELECT " + req_fields + " FROM " + req_table + " WHERE person_id = " + str(current_user.user_id) + ";")
+
+    my_requests_with_types = []
+
+    requests = cur.fetchall()
+    for r in requests:
+        my_request_obj = make_post_class(r, "Request")
+        print(my_request_obj.description)
+        my_requests_with_types.append({"post": my_request_obj, "type": "Request"})
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return render_template("my_requests.html", my_requests_with_types=my_requests_with_types)
 
 
 @app.route("/my_posts")

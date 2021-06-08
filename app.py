@@ -55,6 +55,16 @@ def query_word(word, table, col):
         return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
 
 
+def query_2_words(word1, word2, table, col1, col2):
+    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    if table == req_table:
+        return "SELECT " + req_fields + " FROM " + table + " WHERE " \
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+    else:
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " \
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+
+
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
     person_id = query_post[1]
@@ -83,18 +93,26 @@ def index():
 
     posts_with_types = []
     posts_type = request.args.get('posts_type')
+    category = request.args.get("category")
+
+    if not posts_type:
+        posts_type = "all"
+
+    if not category:
+        category = ""
 
     print(posts_type)
+    print(category)
 
     if posts_type == "all" or posts_type == "request":
-        cur.execute(query_word(key_word, req_table, "description"))
+        cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
             posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
-        cur.execute(query_word(key_word, don_table, "description"))
+        cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")
@@ -114,6 +132,7 @@ def index():
 @app.route("/abc")
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

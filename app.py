@@ -98,21 +98,24 @@ def index():
     if not posts_type:
         posts_type = "all"
 
-    if not category:
-        category = ""
-
     print(posts_type)
     print(category)
 
     if posts_type == "all" or posts_type == "request":
-        cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
+        if category:
+            cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
+        else:
+            cur.execute(query_word(key_word, req_table, "description"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
             posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
-        cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
+        if category:
+            cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
+        else:
+            cur.execute(query_word(key_word, don_table, "description"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")

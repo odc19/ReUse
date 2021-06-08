@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
+from flask_hashing import Hashing
 import psycopg2
 
 from post import post_donation, post_request
@@ -10,7 +11,11 @@ DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
 DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
+salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
+
 app = Flask(__name__)
+hashing = Hashing(app)
+hashing.init_app(app)
 app.secret_key = 'if!9gYPfde_&)Go'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -227,9 +232,11 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('signup'))
 
+    hashed_password = hashing.hash_value(password, salt='@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.')
     conn, cur = connect_to_db()
-    cur.execute("INSERT INTO users (name, email) VALUES('"
+    cur.execute("INSERT INTO users (name, password, email) VALUES('"
                 + name + "', '"
+                + hashed_password + "', '"
                 + email + "')")
     conn.commit()
     conn.close()
@@ -243,12 +250,11 @@ def login_post():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user =  User.get_by_email(email)
+    user = User.get_by_email(email)
 
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
-    if not user:
-        """or not check_password_hash(user.password, password)"""
+    if not user or not hashing.check_value(user.password, password, salt='@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.'):
         flash('Please check your login details and try again.')
         return redirect(url_for('login'))
 

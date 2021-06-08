@@ -5,3 +5,4 @@ SQLAlchemy==1.4.17
 psycopg2==2.8.6
 pytest==6.0.2
 flask-login==0.4.1
+flask-hashing==1.0

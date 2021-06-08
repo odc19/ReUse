@@ -8,7 +8,7 @@ DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
 #req_fields = "user_id, email, password, name, authenticated"
 
-req_fields = "id, name, email"
+req_fields = "id, name, email, password"
 table = "users"
 
 
@@ -21,10 +21,11 @@ class User:
         self.name = name
         self.authenticated = authenticated"""
 
-    def __init__(self, id, name, email, rating):
+    def __init__(self, id, name, email, rating, password):
         self.user_id = id
         self.email = email
         self.name = name
+        self.password = password
 
     def is_authenticated(self):
         return self.authenticated
@@ -60,7 +61,8 @@ class User:
         user_id = user[0]
         name = user[1]
         email = user[2]
-        return User(user_id, name, email, 0)
+        password = user[3]
+        return User(user_id, name, email, 0, password)
 
     @staticmethod
     def get_by_email(email):
@@ -86,4 +88,5 @@ class User:
         user_id = user[0]
         name = user[1]
         email = user[2]
-        return User(user_id, name, email, 0)
+        password = user[3]
+        return User(user_id, name, email, 0, password)

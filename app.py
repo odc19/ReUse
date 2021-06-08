@@ -146,6 +146,7 @@ def connect_to_db():
 
 
 @app.route("/new_request")
+@login_required
 def new_request():
     return render_template("new_request.html")
 
@@ -290,7 +291,7 @@ def login_post():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template('profile.html', name=current_user.name)
+    return render_template('profile.html', name=current_user.name, email=current_user.email)
 
 
 @app.route("/logout")
@@ -338,6 +339,21 @@ def donation_sent(request_id):
     cur.close()
     conn.close()
     return index()
+
+
+@app.route("/my_donations")
+def my_donations():
+    return render_template("my_donations.html")
+
+
+@app.route("/my_requests")
+def my_requests():
+    return render_template("my_requests.html")
+
+
+@app.route("/my_posts")
+def my_posts():
+    return render_template("index.html")
 
 
 def get_table_rows(table):

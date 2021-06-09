@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}
-<meta charset="UTF-8">
+<meta charset="UTF-8" xmlns="http://www.w3.org/1999/html">
 <title>Profile!</title>
 <style>
     body {
@@ -27,6 +27,9 @@
 
 
 
+
+
+
 </style>
 {% endblock header %}
 
@@ -35,26 +38,29 @@
 <div style="text-align: left; color:black;">
     <p> Please select the cause of the report and provide a description: </p>
     <br>
-    <form action="{{ url_for('finish_report_action', user=owner, cause='Inappropriate language', description=value) }}">
-        <button class="button2" type="submit"> Inappropriate language</button>
+    <form action="{{ url_for('finish_report_action', user=owner)}}">
+        <input type="radio" name="message" value="Inappropriate language">
+        Inappropriate language
+        <br>
+        <br>
+        <input type="radio" name="message" value="Didn't show up">
+        Didn't show up
+        <br>
+        <br>
+        <input type="radio" name="message" value="Fake account">
+        Fake account
+        <br>
+        <br>
+        <input type="radio" name="message" value="Spammer">
+        Spammer
+        <br>
+        <br>
+        <br>
+        <label> Description: </label> <input type="text" id="report_description" name="report_description">
+        <br>
+        <br>
+        <button class="button2" type="submit" style="margin-right: 30px;"> Report!</button>
     </form>
-    <br>
-    <br>
-    <form action="{{ url_for('finish_report_action', user=owner, cause='Did not show up', description=value) }}">
-        <button class="button2" type="submit"> Didn't show up</button>
-    </form>
-    <br>
-    <br>
-    <form action="{{ url_for('finish_report_action', user=owner, cause='Fake account',description=value) }}">
-        <button class="button2" type="submit"> Fake account</button>
-    </form>
-    <br>
-    <br>
-    <form action="{{ url_for('finish_report_action', user=owner, cause='Spammer',description=value) }}">
-        <button class="button2" type="submit"> Spammer</button>
-    </form>
-    <br>
-    <label> Description: </label> <input type="text" id="report_description" name="report_description">
 </div>
 
 {% endblock base_content %}

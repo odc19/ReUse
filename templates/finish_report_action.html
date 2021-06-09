@@ -1,17 +1,38 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pick a new post type</title>
+    <style>
+            body {
+                    background-color: rgb(208, 225, 206);
+            }
 
-{% block header %}
-<meta charset="UTF-8">
-<title>Title</title>
-<div>
-    Are you sure you want to report this person for {{ cause }} with description {{ message }}?
-</div>
-{% endblock header %}
+            .button {
+                background-color: #F0D5B4;
+                font-size : 25px;
+                padding: 50px 50px;
+                margin: 6px 0;
+                border: none;
+                display: inline-block;
+                border-radius: 4px;
+                cursor: pointer;
+            }
 
-{% block base_content %}
-<input type="radio" id="yes"/>
-<label for="yes"> Yes </label>
-<br>
-<input type="radio" id="no"/>
-<label for="no"> No </label>
-{ % endblock base_content %}
+            .button:hover {
+                background-color: #C4A874;
+            }
+
+            .center {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 300px;
+            }
+
+    </style>
+</head>
+<body>
+You've reported {{ owner }} for {{ message }} with the message: {{ description }}.
+</body>
+</html>

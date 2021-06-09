@@ -167,8 +167,10 @@ def report_user(user):
     return render_template("report_user.html", owner=user)
 
 @app.route("/post_id/post_type/user_profile_<user>/report/finish_report")
-def finish_report_action(user, message, description):
-    return render_template("finish_report_action.html", message=message, description=description)
+def finish_report_action(user):
+    message_description = request.args.get("report_description")
+    message_type = request.args.get("message")
+    return render_template("finish_report_action.html", owner=user, message=message_type, description=message_description)
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

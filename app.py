@@ -52,19 +52,19 @@ def query_word(word, table, col):
     # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
-               + col + " LIKE '%" + word + "%' ;"
+               + col + " LIKE '%" + word + "%' "
     else:
-        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' "
 
 
 def query_2_words(word1, word2, table, col1, col2):
     # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
-               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
     else:
         return "SELECT " + don_fields + " FROM " + table + " WHERE " \
-               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
 
 
 def make_post_class(query_post, post_type):
@@ -105,9 +105,9 @@ def index():
 
     if posts_type == "all" or posts_type == "request":
         if category:
-            cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
+            cur.execute(query_2_words(key_word, category, req_table, "description", "category") + "AND person_id != " + str(current_user.user_id) + ";")
         else:
-            cur.execute(query_word(key_word, req_table, "description"))
+            cur.execute(query_word(key_word, req_table, "description") + "AND person_id != " + str(current_user.user_id) + ";")
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
@@ -115,9 +115,9 @@ def index():
 
     if posts_type == "all" or posts_type == "donation":
         if category:
-            cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
+            cur.execute(query_2_words(key_word, category, don_table, "description", "category") + "AND person_id != " + str(current_user.user_id) + ";")
         else:
-            cur.execute(query_word(key_word, don_table, "description"))
+            cur.execute(query_word(key_word, don_table, "description") + "AND person_id != " + str(current_user.user_id) + ";")
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")

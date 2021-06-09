@@ -1,67 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Profile!</title>
-    <style>
-            body {
-                    background-color: rgb(208, 225, 206);
-            }
+{% extends "base.html" %}
 
-            .button {
-                background-color: rgb(208, 225, 206);
-                font-size : 15px;
-                padding: 50px 50px;
-                margin: 6px 0;
-                border: none;
-                display: inline-block;
-                border-radius: 2px;
-                cursor: pointer;
-            }
-
-            .button:hover {
-                background-color: #C4A874;
-            }
-
-            .center {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 300px;
-            }
-
-            .right {
-              display: flex;
-              justify-content: right;
-              align-items: right;
-              height: 200px;
-            }
-
-    </style>
-</head>
-<body>
+{% block header %}
+<meta charset="UTF-8">
+<title>Profile!</title>
 <style>
-        h1 {text-align: center;}
-        h2 {text-align: right;}
+    body {
+            background-color: rgb(208, 225, 206);
+    }
+
+    .button {
+        background-color: rgb(208, 225, 206);
+        font-size : 15px;
+        padding: 50px 50px;
+        margin: 6px 0;
+        border: none;
+        display: inline-block;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #C4A874;
+    }
+
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+    }
+
+    .right {
+      display: flex;
+      justify-content: right;
+      align-items: right;
+      height: 200px;
+    }
+
+    h1 {text-align: center;}
+    h2 {text-align: right;}
+
 
 </style>
+{% endblock header %}
+
+{% block base_content %}
+
 <h1> {{ owner }} </h1>
 <h2>
-<div>
-    <form action="{{ url_for('send_message', user=owner) }}">
-        <button class="button" type="submit" style="margin-right: 100px;"> Send a message!</button>
-    </form>
-</div>
-<div>
-    <form action="{{ url_for('user_rating', user=owner) }}">
-        <button class="button" type="submit" style="margin-right: 100px;"> Leave a rating!</button>
-    </form>
-</div>
-<div>
-    <form action="{{ url_for('report_user', user=owner) }}">
-        <button class="button" type="submit" style="margin-right: 100px;"> Report {{ owner }}</button>
-    </form>
-</div>
+    <div>
+        <form action="{{ url_for('send_message', user=owner) }}">
+            <button class="button" type="submit" style="margin-right: 100px;"> Send a message!</button>
+        </form>
+    </div>
+    <div>
+        <form action="{{ url_for('user_rating', user=owner) }}">
+            <button class="button" type="submit" style="margin-right: 100px;"> Leave a rating!</button>
+        </form>
+    </div>
+    <div>
+        <form action="{{ url_for('report_user', user=owner) }}">
+            <button class="button" type="submit" style="margin-right: 100px;"> Report {{ owner }}</button>
+        </form>
+    </div>
 </h2>
-</body>
-</html>
+{% endblock base_content %}

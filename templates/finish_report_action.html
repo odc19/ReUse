@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block header %}
+<meta charset="UTF-8">
+<title>Title</title>
+<div>
+    Are you sure you want to report this person for {{ cause }} with description {{ message }}?
+</div>
+{% endblock header %}
+
+{% block base_content %}
+<input type="radio" id="yes"/>
+<label for="yes"> Yes </label>
+<br>
+<input type="radio" id="no"/>
+<label for="no"> No </label>
+{ % endblock base_content %}

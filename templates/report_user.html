@@ -1,10 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Report page for {{owner}}.</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block header %}
+<meta charset="UTF-8">
+<title>Profile!</title>
+<style>
+    body {
+        background-color: rgb(208, 225, 206);
+        vertical-align:top;
+    }
+
+    .button2 {
+        background-color: rgb(208, 225, 206);
+        font-size : 15px;
+        padding: 10px 50px;
+        margin: 6px 0;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        height:80px;
+        width:200px
+    }
+
+    .button2:hover {
+        background-color: #C4A874;
+    }
+
+
+
+</style>
+{% endblock header %}
+
+{% block base_content %}
+
+<div style="text-align: left; color:black;">
+    <p> Please select the cause of the report and provide a description: </p>
+    <br>
+    <form action="{{ url_for('finish_report_action', user=owner, cause='Inappropriate language', description=value) }}">
+        <button class="button2" type="submit"> Inappropriate language</button>
+    </form>
+    <br>
+    <br>
+    <form action="{{ url_for('finish_report_action', user=owner, cause='Did not show up', description=value) }}">
+        <button class="button2" type="submit"> Didn't show up</button>
+    </form>
+    <br>
+    <br>
+    <form action="{{ url_for('finish_report_action', user=owner, cause='Fake account',description=value) }}">
+        <button class="button2" type="submit"> Fake account</button>
+    </form>
+    <br>
+    <br>
+    <form action="{{ url_for('finish_report_action', user=owner, cause='Spammer',description=value) }}">
+        <button class="button2" type="submit"> Spammer</button>
+    </form>
+    <br>
+    <label> Description: </label> <input type="text" id="report_description" name="report_description">
+</div>
+
+{% endblock base_content %}

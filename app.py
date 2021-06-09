@@ -138,9 +138,9 @@ def index():
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
 
-@app.route("/post_id/post_type/other_user_profile")
-def other_user_profile():
-    return render_template("user_profile.html")
+@app.route("/post_id/post_type/user_profile_<user>")
+def other_user_profile(user):
+    return render_template("other_user_profile.html", owner=user)
 
 
 def connect_to_db():

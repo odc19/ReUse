@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
-from flask_hashing import Hashing
+# from flask_hashing import Hashing
 import psycopg2
 from flask_bcrypt import Bcrypt
 
@@ -52,19 +52,19 @@ def query_word(word, table, col):
     # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
-               + col + " LIKE '%" + word + "%' ;"
+               + col + " LIKE '%" + word + "%' "
     else:
-        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' "
 
 
 def query_2_words(word1, word2, table, col1, col2):
     # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
-               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
     else:
         return "SELECT " + don_fields + " FROM " + table + " WHERE " \
-               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
 
 
 def make_post_class(query_post, post_type):
@@ -105,9 +105,13 @@ def index():
 
     if posts_type == "all" or posts_type == "request":
         if category:
-            cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
+            query = query_2_words(key_word, category, req_table, "description", "category")
         else:
-            cur.execute(query_word(key_word, req_table, "description"))
+            query = query_word(key_word, req_table, "description")
+        if current_user.is_authenticated:
+            query += "AND person_id != " + str(current_user.user_id)
+        query += ";"
+        cur.execute(query)
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
@@ -115,9 +119,13 @@ def index():
 
     if posts_type == "all" or posts_type == "donation":
         if category:
-            cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
+            query = query_2_words(key_word, category, don_table, "description", "category")
         else:
-            cur.execute(query_word(key_word, don_table, "description"))
+            query = query_word(key_word, don_table, "description")
+        if current_user.is_authenticated:
+            query += "AND person_id != " + str(current_user.user_id)
+        query += ";"
+        cur.execute(query)
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")

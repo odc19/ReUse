@@ -138,6 +138,10 @@ def index():
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
 
+@app.route("/post_id/post_type/other_user_profile")
+def other_user_profile():
+    return render_template("user_profile.html")
+
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Profile!</title>
-     <style>
+    <style>
             body {
                     background-color: rgb(208, 225, 206);
             }
 
             .button {
-                background-color: #F0D5B4;
-                font-size : 25px;
+                background-color: rgb(208, 225, 206);
+                font-size : 15px;
                 padding: 50px 50px;
                 margin: 6px 0;
                 border: none;
                 display: inline-block;
-                border-radius: 4px;
+                border-radius: 2px;
                 cursor: pointer;
             }
 
@@ -29,23 +29,39 @@
               align-items: center;
               height: 300px;
             }
-     </style>
+
+            .right {
+              display: flex;
+              justify-content: right;
+              align-items: right;
+              height: 200px;
+            }
+
+    </style>
 </head>
 <body>
-    <style>
+<style>
         h1 {text-align: center;}
-    </style>
-    <h1> {{ owner }}'s profile </h1>
-    <!---
-    <div class="center">
-        <form action="{{ url_for('new_donation') }}">
-            <button class="button" type="submit" style="margin-right: 100px;"> Donate </button>
-        </form>
-        <form action="{{ url_for('new_request') }}">
-            <button class="button" type="submit"> Request </button>
-        </form>
-    </div>
-    --->
+        h2 {text-align: right;}
 
+</style>
+<h1> {{ owner }} </h1>
+<h2>
+<div>
+    <form action="{{ url_for('send_message', user=owner) }}">
+        <button class="button" type="submit" style="margin-right: 100px;"> Send a message!</button>
+    </form>
+</div>
+<div>
+    <form action="{{ url_for('user_rating', user=owner) }}">
+        <button class="button" type="submit" style="margin-right: 100px;"> Leave a rating!</button>
+    </form>
+</div>
+<div>
+    <form action="{{ url_for('report_user', user=owner) }}">
+        <button class="button" type="submit" style="margin-right: 100px;"> Report {{ owner }}</button>
+    </form>
+</div>
+</h2>
 </body>
 </html>

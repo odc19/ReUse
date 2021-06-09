@@ -142,6 +142,18 @@ def new_post():
 def other_user_profile(user):
     return render_template("other_user_profile.html", owner=user)
 
+@app.route("/post_id/post_type/user_profile_<user>/rating")
+def user_rating(user):
+    return render_template("user_rating.html", owner=user)
+
+@app.route("/post_id/post_type/user_profile_<user>/messages")
+def send_message(user):
+    return render_template("send_message.html", owner=user)
+
+@app.route("/post_id/post_type/user_profile_<user>/report")
+def report_user(user):
+    return render_template("report_user.html", owner=user)
+
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

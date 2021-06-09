@@ -1,109 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title> First page </title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
-        <style>
-            body, html {
-                    height: 100%;
-                    background-color: rgb(208, 225, 206);
-            }
-            h1 {
-                text-align: center;
-                color: #4E8B96;
-                text-shadow: -1px -1px 0 #505050,
-                             1px -1px 0 #505050,
-                             -1px 1px 0 #505050,
-                             1px 1px 0 #505050,
-                             2px 2px 4px #696969;
-            }
-            input[type=text], select {
-                background-color: #F0D5B4;
-                text-align: left;
-                padding: 12px 20px;
-                margin: 5px 0;
-                display: inline-block;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            .button {
-                background-color: #F0D5B4;
-                font-size : 16px;
-                padding: 20px 20px;
-                margin: 6px 0;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
+{% extends "base.html" %}
 
-            .button_category {
-                background-color: #F0D5B4;
-                font-size : 16px;
-                padding: 20px 20px;
-                margin: 6px 0;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                width: 11em;
+{% block title %}
+Home
+{% endblock title %}
 
-            }
+{% block base_content %}
+    <h1 style="font-size: 40px;"> ReUse </h1>
 
-            .button_category:hover {
-                background-color: #C4A874;
-            }
-
-            .button:hover {
-                background-color: #C4A874;
-            }
-        </style>
-    </head>
-    <body>
-        <section class="hero is-small is-primary" style="background-color: rgb(208, 225, 206)">
-            <div class="hero-head" style="background-color: rgb(208, 225, 206)">
-                <nav class="navbar" style="background-color: rgb(208, 225, 206)">
-                    <div class="container" style="background-color: rgb(208, 225, 206)">
-                        <div id="navbarMenuHeroA" class="navbar-menu" style="background-color: rgb(208, 225, 206)">
-                            <div class="navbar-end">
-                                <a href="{{ url_for('index') }}" class="navbar-item" style="color: black;">
-                                    Home
-                                </a>
-
-                                {% if not current_user.email %}
-                                <a href="{{ url_for('login') }}" class="navbar-item" style="color: black;">
-                                    Login
-                                </a>
-                                <a href="{{ url_for('signup') }}" class="navbar-item" style="color: black;">
-                                    Sign Up
-                                </a>
-                                {% endif %}
-
-                                {% if current_user.email %}
-                                <a href="{{ url_for('profile') }}" class="navbar-item" style="color: black;">
-                                    Profile
-                                </a>
-                                <a href="{{ url_for('logout') }}" class="navbar-item" style="color: black;">
-                                    Logout
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </section>
-        <h1 style="font-size: 40px;"> ReUse </h1>
-
-        <div class="hero-body" style="height: 100%; background-color: rgb(208, 225, 206)">
-            <br>
-            {% block content %}{% endblock content %}
-            <br>
-            <br>
-            <br>
+    <div style="height: 100%; background-color: rgb(208, 225, 206)">
+        <br>
+        {% block content %}{% endblock content %}
+        <br>
+        <br>
+        <br>
+        <div style="color: black; text-align: left;">
             {% for post_with_type in posts_with_types %}
-                <div style="background-color: #ECF3EB; padding: 1em 3em; width: 70%;margin-left: auto; margin-right: auto; border-radius: 4px;">
+                <div style="background-color: #ECF3EB; padding: 1em 3em; margin-left: auto; margin-right: auto; border-radius: 4px;">
                     <form action="{{ url_for('view_post', post_id=post_with_type['post']['id'], post_type=post_with_type['type']) }}">
                         <h2> {{ post_with_type['type'] }} </h2>
                         Title: {{ post_with_type['post']['title'] }}
@@ -119,6 +31,6 @@
             <br>
             <br>
         </div>
-    </body>
-</html>
+    </div>
+{% endblock base_content %}
 

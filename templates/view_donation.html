@@ -1,17 +1,17 @@
 {% extends "view_post.html" %}
 
 {% block other_fields %}
-<br>
-<br>
-Condition: {{ post['condition'] }}
-<br>
-<br>
-Condition description: {{ post['condition_description'] }}
-<br>
+    <br>
+    <br>
+    Condition: {{ post['condition'] }}
+    <br>
+    <br>
+    Condition description: {{ post['condition_description'] }}
+    <br>
 {% endblock other_fields %}
 
 {% block interested_button %}
-{{ url_for('request_sent', donation_id=post['id']) }}
+    {{ url_for('request_sent', donation_id=post['id']) }}
 {% endblock interested_button %}
 
 {% block submit_button %}
@@ -19,5 +19,5 @@ Request
 {% endblock submit_button %}
 
 {% block post_type %}
-<h2> Donation </h2>
+    <h2> Donation </h2>
 {% endblock post_type %}

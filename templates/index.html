@@ -2,12 +2,9 @@
 
 {% block content %}
 
-<style>
-        h1 {text-align: center;}
-</style>
-<h1>
+<div style="text-align: center;">
     <form action="{{ url_for('index') }}">
-        <input type="text" id="search_sentence" name="search_sentence" placeholder="Search..">
+        <input type="text" id="search_sentence" name="search_sentence" placeholder="Search...">
         <br>
         <select name="posts_type" id="posts_type">
             <option value="all"> All </option>
@@ -16,29 +13,28 @@
         </select>
         <button class="button" type="submit"> Search! </button>
     </form>
-        <form action="{{ url_for('pick_new_post') }}">
-            <button class="button" type="submit"><i class="material-icons" style="font-size:18px;">add_circle</i> Add a post!</button>
-        </form>
+    <form action="{{ url_for('pick_new_post') }}">
+        <button class="button" type="submit"><i class="material-icons" style="font-size:18px;">add_circle</i> Add a post!</button>
+    </form>
 
     <br>
-        <form action="{{ url_for('index') }}">
-            <input class="button_category" name="category" value="clothes" type="submit">
-            <input class="button_category" name="category" value="books" type="submit">
-            <input class="button_category" name="category" value="toys" type="submit">
-            <input class="button_category" name="category" value="sports" type="submit">
-            <input class="button_category" name="category" value="gaming" type="submit">
-            <input class="button_category" name="category" value="school" type="submit">
-            <input class="button_category" name="category" value="furniture" type="submit">
-            <br>
-            <input class="button_category" name="category" value="perishables" type="submit">
-            <input class="button_category" name="category" value="kitchen ware" type="submit">
-            <input class="button_category" name="category" value="self care" type="submit">
-            <input class="button_category" name="category" value="cars" type="submit">
-            <input class="button_category" name="category" value="electronics" type="submit">
-            <input class="button_category" name="category" value="gardening" type="submit">
-            <input class="button_category" name="category" value="other" type="submit">
-        </form>
-
-</h1>
+    <form action="{{ url_for('index') }}">
+        <input class="button_category" name="category" value="clothes" type="submit">
+        <input class="button_category" name="category" value="books" type="submit">
+        <input class="button_category" name="category" value="toys" type="submit">
+        <input class="button_category" name="category" value="sports" type="submit">
+        <input class="button_category" name="category" value="gaming" type="submit">
+        <input class="button_category" name="category" value="school" type="submit">
+        <input class="button_category" name="category" value="furniture" type="submit">
+        <br>
+        <input class="button_category" name="category" value="perishables" type="submit">
+        <input class="button_category" name="category" value="kitchen ware" type="submit">
+        <input class="button_category" name="category" value="self care" type="submit">
+        <input class="button_category" name="category" value="cars" type="submit">
+        <input class="button_category" name="category" value="electronics" type="submit">
+        <input class="button_category" name="category" value="gardening" type="submit">
+        <input class="button_category" name="category" value="other" type="submit">
+    </form>
+</div>
 
 {% endblock content %}

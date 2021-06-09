@@ -3,5 +3,18 @@
 {% block title %} My donations {% endblock title%}
 
 {% block content %}
-    My donations content
+    <h1 style="font-size: 4em;"> My donations </h1>
+    {% for my_donation_with_type in my_donations_with_types %}
+        <div style="color: black; text-align: left; background-color: #ECF3EB; padding: 1em 3em; width: 70%;margin-left: auto; margin-right: auto; border-radius: 4px;">
+            <form action="{{ url_for('view_my_post', my_post_id=my_donation_with_type['post']['id'], my_post_type=my_donation_with_type['type']) }}">
+                <h2> {{ my_donation_with_type['type'] }} </h2>
+                Title: {{ my_donation_with_type['post']['title'] }}
+                <br>
+                Description: {{ my_donation_with_type['post']['description'] }}
+                <br>
+                <button class="button" type="submit"> View donation </button>
+            </form>
+        </div>
+        <br>
+    {% endfor %}
 {% endblock content %}

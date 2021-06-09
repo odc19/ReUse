@@ -251,7 +251,7 @@ def view_my_post(my_post_id, my_post_type):
     if my_post_type == "Request":
         cur.execute("SELECT " + req_fields + " FROM " + req_table + " WHERE id = " + my_post_id + ";")
     else:
-        cur.execute("SELECT " + don_fields + " FROM " + don_fields + " WHERE id = " + my_post_id + ";")
+        cur.execute("SELECT " + don_fields + " FROM " + don_table + " WHERE id = " + my_post_id + ";")
 
     my_post = cur.fetchone()
     my_post_obj = make_post_class(my_post, my_post_type)
@@ -377,7 +377,23 @@ def donation_sent(request_id):
 
 @app.route("/my_donations")
 def my_donations():
-    return render_template("my_donations.html")
+    conn, cur = connect_to_db()
+    cur.execute("SELECT " + don_fields + " FROM " + don_table + " WHERE person_id = " + str(current_user.user_id) + ";")
+
+    my_donations_with_types = []
+
+    donations = cur.fetchall()
+    for d in donations:
+        my_donation_obj = make_post_class(d, "Donation")
+        print(my_donation_obj.description)
+        my_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return render_template("my_donations.html", my_donations_with_types=my_donations_with_types)
 
 
 @app.route("/my_requests")

@@ -1,43 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title> {{ my_post['title'] }} </title>
-    </head>
-    <body>
+{% extends "base.html" %}
+
+{% block title %}
+{{ my_post['title'] }}
+{% endblock title %}
+
+{% block base_content %}
     <br>
+    <br>
+    <br>
+    <br>
+    <div style="background-color: #ECF3EB; color: black; padding-left: 5em; text-align: left">
         <br>
         <br>
+        <h1 style="font-size: 3em;"> {% block my_post_type %}{% endblock my_post_type %} </h1>
         <br>
-        <div style="background-color: #ECF3EB; color: black; padding-left: 5em">
-            <br>
-            <br>
-            {% block my_post_type %}{% endblock my_post_type %}
-            <br>
-            <br>
-            Title: {{ my_post['title'] }}
-            <br>
-            <br>
-            Description: {{ my_post['description'] }}
-            <br>
-            <br>
-            Category: {{ my_post['category'] }}
-            <br>
-            <br>
-            Location: {{ my_post['location'] }}
-            {% block other_fields %}{% endblock other_fields %}
-            <br>
-            <br>
+        <br>
+        Title: {{ my_post['title'] }}
+        <br>
+        <br>
+        Description: {{ my_post['description'] }}
+        <br>
+        <br>
+        Category: {{ my_post['category'] }}
+        <br>
+        <br>
+        Location: {{ my_post['location'] }}
 
-            People interested:
-            <ul>
-            {% for interested_person in interested_people %}
-                <li> {{ interested_person[0] }} ; {{ interested_person[1] }} </li>
-            {% endfor %}
-            </ul>
+        {% block other_fields %}{% endblock other_fields %}
 
-            <br>
-            <br>
-        </div>
-    </body>
-</html>
+        <br>
+        <br>
+
+        People interested:
+        <ul>
+        {% for interested_person in interested_people %}
+            <li> {{ interested_person[0] }} ; {{ interested_person[1] }} </li>
+        {% endfor %}
+        </ul>
+
+        <br>
+        <br>
+    </div>
+{% endblock base_content %}

@@ -117,7 +117,7 @@ def index():
         if category:
             cur.execute(query_2_words(key_word, category, don_table, "description", "category") + "AND person_id != " + str(current_user.user_id) + ";")
         else:
-            cur.execute(query_word(key_word, don_table, "description") + "AND person_id != " + str(current_user.user_id) + ";")
+            cur.execute(query_word(key_word, don_table, "description") + "AND person_id != " + str(current_user.user_id)+ ";")
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")

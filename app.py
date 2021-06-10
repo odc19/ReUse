@@ -66,6 +66,17 @@ def query_2_words(word1, word2, table, col1, col2):
         return "SELECT " + don_fields + " FROM " + table + " WHERE " \
                + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' ;"
 
+def query_3_words(word1, word2, word3, table, col1, col2, col3):
+    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
+    if table == req_table:
+        return "SELECT " + req_fields + " FROM " + table + " WHERE " \
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" \
+               + word2 + "%' AND " + col3 + " LIKE '%" + word3 + "%' ;"
+    else:
+        return "SELECT " + don_fields + " FROM " + table + " WHERE " \
+               + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" \
+               + word2 + "%' AND " + col3 + " LIKE '%" + word3 + "%' ;"
+
 
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
@@ -100,14 +111,20 @@ def index():
     if not posts_type:
         posts_type = "all"
 
+    charity = request.args.get('charity')
+    if not charity:
+        charity = ""
+
+    print(charity)
+
     print(posts_type)
     print(category)
 
     if posts_type == "all" or posts_type == "request":
         if category:
-            cur.execute(query_2_words(key_word, category, req_table, "description", "category"))
+            cur.execute(query_3_words(key_word, category, charity, req_table, "description", "category", "charity"))
         else:
-            cur.execute(query_word(key_word, req_table, "description"))
+            cur.execute(query_2_words(key_word, charity, req_table, "description", "charity"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
@@ -115,9 +132,9 @@ def index():
 
     if posts_type == "all" or posts_type == "donation":
         if category:
-            cur.execute(query_2_words(key_word, category, don_table, "description", "category"))
+            cur.execute(query_3_words(key_word, category, charity, don_table, "description", "category", "charity"))
         else:
-            cur.execute(query_word(key_word, don_table, "description"))
+            cur.execute(query_2_words(key_word, charity, don_table, "description", "charity"))
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")

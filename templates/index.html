@@ -6,7 +6,18 @@
         h1 {text-align: center;}
 </style>
 <h1>
+{#    <form action="{{ url_for('index') }}">#}
+{#            <input class="button_category" name="charity" value="no" type="submit" >#}
+{#            <input class="button_category" name="charity" value="Charities" type="submit">#}
+{#    </form>#}
+
     <form action="{{ url_for('index') }}">
+        <select name="charity" id="charity">
+            <option value=""> All users</option>
+            <option value="yes"> Charity </option>
+            <option value="no"> People </option>
+        </select>
+        <br>
         <input type="text" id="search_sentence" name="search_sentence" placeholder="Search..">
         <br>
         <select name="posts_type" id="posts_type">

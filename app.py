@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
 # from flask_hashing import Hashing
+from opencage.geocoder import OpenCageGeocode
+from flask_googlemaps import GoogleMaps, Map
 import psycopg2
 from flask_bcrypt import Bcrypt
 
@@ -14,9 +16,11 @@ DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
 # salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="./templates")
 # hashing = Hashing(app)
 bcrypt = Bcrypt(app)
+geocoder = OpenCageGeocode('432d61b9748c468c9d36f47300a8b0b0')
+#GoogleMaps(app, key="AIzaSyCde99Yr7TvjwQe7rqVYloE_4NXNAfemIo")
 # hashing.init_app(app)
 app.secret_key = 'if!9gYPfde_&)Go'
 login_manager = LoginManager()
@@ -442,6 +446,15 @@ def get_table_rows(table):
     cur.close()
     conn.close()
     return rows_nr
+
+
+@app.route("/post_id/post_type/map/location_<loc>")
+def mapview(loc):
+    forward = geocoder.geocode(loc)
+    lng = forward[0]['geometry']['lng']
+    lat = forward[0]['geometry']['lat']
+    print(forward[0]['geometry']['lng'])
+    return render_template('example.html', lng=lng, lat=lat)
 
 
 if __name__ == "__main__":

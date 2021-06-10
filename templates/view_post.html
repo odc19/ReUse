@@ -46,7 +46,9 @@
             Category: {{ post['category'] }}
             <br>
             <br>
-            Location: {{ post['location'] }}
+            Location: {{ post['location'] }} <form action="{{ url_for('mapview',loc=post['location']) }}">
+                <button class="button" type="submit"> See location on map! </button> </form>
+
             {% block other_fields %}{% endblock other_fields %}
             <br>
             <br>

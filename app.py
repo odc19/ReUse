@@ -448,9 +448,9 @@ def get_table_rows(table):
     return rows_nr
 
 
-@app.route("/map")
-def mapview():
-    forward = geocoder.geocode("Colindale, London, UK")
+@app.route("/post_id/post_type/map/location_<loc>")
+def mapview(loc):
+    forward = geocoder.geocode(loc)
     lng = forward[0]['geometry']['lng']
     lat = forward[0]['geometry']['lat']
     print(forward[0]['geometry']['lng'])

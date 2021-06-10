@@ -26,6 +26,10 @@ Home
                         <br>
                         Location: {{ post_with_type['post']['location'] }}
                         <br>
+                        {% if post_with_type['post']['is_charity'] == "yes" %}
+                            <font color="red"> THIS IS A CHARITY </font>
+                            <br>
+                        {% endif %}
                         <button class="button" type="submit"> View post </button>
                     </form>
                 </div>

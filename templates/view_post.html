@@ -37,6 +37,11 @@
             Email: {{ owner[1] }}
             <br>
             <br>
+            {% if post['is_charity'] == "yes" %}
+                <font color="red"> THIS IS A CHARITY </font>
+                <br>
+                <br>
+            {% endif %}
             Title: {{ post['title'] }}
             <br>
             <br>
@@ -59,14 +64,14 @@
             <ul>
             {% for interested_person in interested_people %}
                 <li> {{ interested_person[0] }} ; {{ interested_person[1] }}
-                {% if not reserved_person and owner == current_user.user_id  %}
-                <button> Reserve </button>
-                {% endif %}
-                {% if reserved_person == interested_person[2]%}
-                <font color="green"> <b> Reserved! </b> </font>
-                {% endif %}
-                {% endfor %}
-                 </li>
+                    {% if not reserved_person and owner == current_user.user_id  %}
+                        <button> Reserve </button>
+                    {% endif %}
+                    {% if reserved_person == interested_person[2]%}
+                        <font color="green"> <b> Reserved! </b> </font>
+                    {% endif %}
+                </li>
+            {% endfor %}
             </ul>
             <br>
             <br>

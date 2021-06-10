@@ -41,8 +41,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
 req_table = "requests"
 don_table = "donations"
-req_fields = "id, person_id, title, category, description, location, reserved, date"
-don_fields = "id, person_id, title, category, description, location, reserved, date, condition, condition_description"
+req_fields = "id, person_id, title, category, description, location, reserved, date, charity"
+don_fields = "id, person_id, title, category, description, location, reserved, date, charity, condition, condition_description"
 
 
 def init_table_posts():
@@ -95,14 +95,15 @@ def make_post_class(query_post, post_type):
     location = query_post[5]
     reserved = query_post[6]
     date = query_post[7]
+    is_charity = query_post[8]
 
     if post_type == "Donation":
-        condition = query_post[8]
-        condition_description = query_post[9]
-        return post_donation(post_id, person_id, title, category, description, location, reserved, date,
+        condition = query_post[9]
+        condition_description = query_post[10]
+        return post_donation(post_id, person_id, title, category, description, location, reserved, date, is_charity,
                              condition, condition_description)
     else:
-        return post_request(post_id, person_id, title, category, description, location, reserved, date)
+        return post_request(post_id, person_id, title, category, description, location, reserved, date, is_charity)
 
 
 def in_range(lng_location, lat_location, location2, location_range):
@@ -133,6 +134,7 @@ def index():
 
     posts_with_types = []
     posts_type = request.args.get('posts_type')
+    poster = request.args.get('poster')
     sort_by = request.args.get('sort_by')
     category = request.args.get("category")
     condition = request.args.get("condition")
@@ -175,7 +177,8 @@ def index():
         for post in posts:
             post_obj = make_post_class(post, "Request")
             if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
-                posts_with_types.append({"post": post_obj, "type": "Request"})
+                if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
+                    posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
         if category:
@@ -200,7 +203,8 @@ def index():
             post_obj = make_post_class(post, "Donation")
             if not condition or post_obj.condition == condition or in_range(post_obj.location, location, location_range):
                 if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
-                    posts_with_types.append({"post": post_obj, "type": "Donation"})
+                    if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
+                        posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)

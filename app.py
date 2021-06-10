@@ -98,6 +98,7 @@ def index():
 
     posts_with_types = []
     posts_type = request.args.get('posts_type')
+    sort_by = request.args.get('sort_by')
     category = request.args.get("category")
     condition = request.args.get("condition")
 
@@ -114,6 +115,8 @@ def index():
             query = query_word(key_word, req_table, "description")
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
+        if sort_by == "Date":
+            query += "ORDER BY date"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()
@@ -128,6 +131,8 @@ def index():
             query = query_word(key_word, don_table, "description")
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
+        if sort_by == "Date":
+            query += "ORDER BY date"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()

@@ -18,6 +18,12 @@
     <form action="{{ url_for('index') }}">
         <input type="text" id="search_sentence" name="search_sentence" placeholder="Search...">
         <br>
+        <label style="color: black;"> Sort by: </label>
+        <select name="sort_by" id="sort_by">
+            <option value="no_sort"> Do not sort </option>
+            <option value="Date"> Date </option>
+        </select>
+        <br>
         <label style="color: black;"> Post type: </label>
         <select name="posts_type" id="posts_type">
             <option value="all"> All </option>

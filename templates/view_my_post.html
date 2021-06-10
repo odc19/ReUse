@@ -31,7 +31,16 @@
         People interested:
         <ul>
         {% for interested_person in interested_people %}
-            <li> {{ interested_person[0] }} ; {{ interested_person[1] }} </li>
+            <li> {{ interested_person[0] }} ; {{ interested_person[1] }}
+            {% if not reserved_person %}
+            <form action=" {{ url_for('reserved_post', reserved_person=interested_person[0]) }} ">
+            <button> Reserve </button>
+            </form>
+            {% endif %}
+            {% if reserved_person == interested_person[2] %}
+            <font color="green"> Reserved! </font>
+            {% endif %}
+             </li>
         {% endfor %}
         </ul>
 

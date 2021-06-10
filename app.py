@@ -339,7 +339,7 @@ def successful_post(post_type):
         condition_description = request.args.get('post_condition_description')
 
         cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
-                    + "condition_description) VALUES("
+                    + "condition_description, date) VALUES("
                     + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
@@ -370,19 +370,23 @@ def view_post(post_id, post_type):
     post_obj = make_post_class(post, post_type)
 
     if post_type == "Donation":
-        cur.execute("SELECT DISTINCT name, email FROM interested_donations "
+        cur.execute("SELECT DISTINCT name, email, id FROM interested_donations "
                     + "INNER JOIN users ON interested_donations.interested_id = users.id "
                     + "AND interested_donations.post_id = " + post_id + ";")
     else:
-        cur.execute("SELECT DISTINCT name, email FROM interested_requests "
+        cur.execute("SELECT DISTINCT name, email, id FROM interested_requests "
                     + "INNER JOIN users ON interested_requests.interested_id = users.id "
                     + "AND interested_requests.post_id = " + post_id + ";")
     interested_people = cur.fetchall()
 
     cur.execute("SELECT name, email FROM users WHERE id = " + str(post_obj.person_id) + ";")
     owner = cur.fetchone()
+    cur.fetchall()
 
-    print(owner)
+    query = "SELECT reserved from " + table + " WHERE id = " + post_id + ";"
+    cur.execute(query)
+    reserved_person = cur.fetchone()[0]
+    print(reserved_person)
 
     conn.commit()
 
@@ -390,18 +394,24 @@ def view_post(post_id, post_type):
     conn.close()
 
     if post_type == "Donation":
-        return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people)
+        return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people,
+                               reserved_person=reserved_person)
     else:
-        return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people)
+        return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
+                               reserved_person=reserved_person)
 
 
 @app.route("/view_my_post_<my_post_id>_<my_post_type>")
 def view_my_post(my_post_id, my_post_type):
     conn, cur = connect_to_db()
     if my_post_type == "Request":
-        cur.execute("SELECT " + req_fields + " FROM " + req_table + " WHERE id = " + my_post_id + ";")
+        table = req_table
+        fields = req_fields
     else:
-        cur.execute("SELECT " + don_fields + " FROM " + don_table + " WHERE id = " + my_post_id + ";")
+        table = don_table
+        fields = don_fields
+
+    cur.execute("SELECT " + fields + " FROM " + table + " WHERE id = " + my_post_id + ";")
 
     my_post = cur.fetchone()
     my_post_obj = make_post_class(my_post, my_post_type)
@@ -416,15 +426,29 @@ def view_my_post(my_post_id, my_post_type):
                     + "AND interested_requests.post_id = " + my_post_id + ";")
     interested_people = cur.fetchall()
 
+    query = "SELECT reserved from " + table + " WHERE id = " + my_post_id + ";"
+    cur.execute(query)
+    reserved_person = cur.fetchone()[0]
+    print(reserved_person)
+
     conn.commit()
 
     cur.close()
     conn.close()
 
     if my_post_type == "Request":
-        return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people)
+        return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people,
+                               reserved_person=reserved_person)
     else:
-        return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people)
+        return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people,
+                               reserved_person=reserved_person)
+
+
+@app.route("/reserved_post/<reserved_person>")
+def reserved_post(reserved_person):
+    reserved_id = get_user_id_from_name(reserved_person)
+    cur, conn = connect_to_db()
+    return render_template("reserved_post.html", reserved_person=reserved_person)
 
 
 @app.route("/login")

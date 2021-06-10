@@ -116,7 +116,7 @@ def index():
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
         if sort_by == "Date":
-            query += "ORDER BY date"
+            query += "ORDER BY date DESC"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()
@@ -132,7 +132,7 @@ def index():
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
         if sort_by == "Date":
-            query += "ORDER BY date"
+            query += "ORDER BY date DESC"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()

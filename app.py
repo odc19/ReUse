@@ -363,6 +363,7 @@ def pick_new_post():
 
 
 @app.route("/request_sent/<donation_id>")
+@login_required
 def request_sent(donation_id):
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO interested_donations (post_id, interested_id) VALUES ("
@@ -371,10 +372,11 @@ def request_sent(donation_id):
     conn.commit()
     cur.close()
     conn.close()
-    return index()
+    return redirect(url_for('view_post', post_id=donation_id, post_type="Donation"))
 
 
 @app.route("/donation_sent/<request_id>")
+@login_required
 def donation_sent(request_id):
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO interested_requests (post_id, interested_id) VALUES ("
@@ -383,7 +385,7 @@ def donation_sent(request_id):
     conn.commit()
     cur.close()
     conn.close()
-    return index()
+    return redirect(url_for('view_post', post_id=request_id, post_type="Request"))
 
 
 @app.route("/my_donations")

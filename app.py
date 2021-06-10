@@ -7,6 +7,7 @@ import psycopg2
 from flask_bcrypt import Bcrypt
 from datetime import date
 
+from rating import rating_class
 from post import post_donation, post_request
 from models import User
 
@@ -239,7 +240,20 @@ def send_message(user):
 
 @app.route("/post_id/post_type/user_profile_<user>/all_ratings")
 def see_all_ratings(user):
-    return render_template("see_all_ratings.html", owner=user)
+    rating_list = []
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = "+str(get_user_id_from_name(user))+";"
+    cur.execute(query)
+    ratings = cur.fetchall()
+    print(ratings)
+    for rating in ratings:
+        rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
+        rating_list.append({"rating_obj": rating_obj})
+    conn.commit()
+    cur.close()
+    conn.close()
+    return render_template("see_all_ratings.html", rating_list=rating_list, owner=user)
 
 
 @app.route("/post_id/post_type/user_profile_<user>/report")
@@ -403,6 +417,11 @@ def view_post(post_id, post_type):
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
                                reserved_person=reserved_person)
+
+
+@app.route("/post_id/post_type/<type>/<description>")
+def view_rating(type, description):
+    return render_template("view_rating.html", type=type, description=description)
 
 
 @app.route("/view_my_post_<my_post_id>_<my_post_type>")

@@ -3,8 +3,21 @@
 {% block header %}
     <meta charset="UTF-8">
     <title>All ratings</title>
-
-            Owner of the post: {{ owner[0] }} <form action="{{ url_for('other_user_profile',user=owner[0]) }}">
-                <button class="button" type="submit"> See {{ owner[0] }}'s profile! </button> </form>
-
 {% endblock header %}
+
+
+{% block base_content %}
+    <h1 style="font-size: 4em;"> All ratings for {{ owner }}: </h1>
+    {% for rating_obj in rating_list %}
+        <div style="color: black; text-align: left; background-color: #ECF3EB; padding: 1em 3em; width: 70%;margin-left: auto; margin-right: auto; border-radius: 4px;">
+            <form action="{{ url_for('view_rating', type=rating_obj['rating_obj']['rating_type'], description=rating_obj['rating_obj']['rating_description'])}}">
+                Title: {{ rating_obj['rating_obj']['rating_type'] }}
+                <br>
+                Description: {{ rating_obj['rating_obj']['rating_description'] }}
+                <br>
+<!--                <button class="button" type="submit"> View rating </button>-->
+            </form>
+        </div>
+        <br>
+    {% endfor %}
+{% endblock %}

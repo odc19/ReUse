@@ -30,8 +30,8 @@
             {% block post_type %}{% endblock post_type %}
             <br>
             <br>
-            Owner of the post:
-            <a href="url">{{ owner[0] }}</a>
+            Owner of the post: {{ owner[0] }} <form action="{{ url_for('other_user_profile',user=owner[0]) }}">
+                <button class="button" type="submit"> See {{ owner[0] }}'s profile! </button> </form>
             <br>
             <br>
             Email: {{ owner[1] }}

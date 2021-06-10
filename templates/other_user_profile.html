@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block header %}
+<meta charset="UTF-8">
+<title>Profile!</title>
+<style>
+    body {
+        background-color: rgb(208, 225, 206);
+        vertical-align:top;
+    }
+
+    .button2 {
+        background-color: #F0D5B4;
+        font-size : 15px;
+        padding: 10px 50px;
+        margin: 6px 0;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        height:80px;
+        width:200px
+    }
+
+    .button2:hover {
+        background-color: #C4A874;
+    }
+
+
+</style>
+{% endblock header %}
+
+{% block base_content %}
+
+<div style="text-align: left; display:inline-block; width:70%;">
+    <i style="color:black;"> [INSERT PICTURE HERE]</i>
+    <br>
+    <p style="color:black;font-size:30px;"> {{ owner }} </p>
+    <br>
+    <p style="color:black;font-size:20px;">
+        <i> Rating: </i>
+    </p>
+    <a href="{{ url_for('see_all_ratings', user=owner) }}" style="color: black;font-size:10px;">
+        See all ratings
+    </a>
+    </p>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+<div style="text-align: right; display:inline-block; ">
+    <form action="{{ url_for('send_message', user=owner) }}">
+        <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>
+    </form>
+    <form action="{{ url_for('user_rating', user=owner) }}">
+        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>
+    </form>
+    <form action="{{ url_for('report_user', user=owner) }}">
+        <button class="button2" type="submit" style="margin-right: 30px;"> Report {{ owner }}</button>
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+{% endblock base_content %}

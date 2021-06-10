@@ -70,6 +70,22 @@ def query_2_words(word1, word2, table, col1, col2):
                + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
 
 
+def get_user_id_from_name(user_name):
+    conn, cur = connect_to_db()
+    cur.execute("SELECT id FROM users WHERE name = '" + user_name + "';")
+    user_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    conn.close()
+    return user_id
+
+def get_pos_neg_rating(message):
+    if message == "Trustworthy" or message == "Met on time" or message == "They were kind, polite":
+        return "positive"
+    elif message == "Other":
+        return "neutral"
+    return "negative"
+
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
     person_id = query_post[1]
@@ -148,6 +164,72 @@ def index():
 @app.route("/abc")
 def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+
+
+@app.route("/post_id/post_type/user_profile_<user>")
+def other_user_profile(user):
+    return render_template("other_user_profile.html", owner=user)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/rating")
+def user_rating(user):
+    return render_template("user_rating.html", owner=user)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/messages")
+def send_message(user):
+    return render_template("send_message.html", owner=user)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/all_ratings")
+def see_all_ratings(user):
+    return render_template("see_all_ratings.html", owner=user)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/report")
+def report_user(user):
+    return render_template("report_user.html", owner=user)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/report/finish_report")
+def finish_report_action(user):
+    message_description = request.args.get("report_description")
+    message_type = request.args.get("message")
+    user_id = get_user_id_from_name(user)
+    print(user_id)
+    print(message_type)
+    print(message_description)
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO reports (id, message_type, report_description) VALUES("
+                + str(user_id) + ", '"
+                + message_type + "', '"
+                + message_description + "');")
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    return render_template("finish_report_action.html", owner=user, message=message_type,
+                           description=message_description)
+
+
+@app.route("/post_id/post_type/user_profile_<user>/rating/finish_rating")
+def finish_rating_action(user):
+    message_description = request.args.get("rating_description")
+    rating_type = request.args.get("message")
+    user_id = get_user_id_from_name(user)
+    pos_neg_type = get_pos_neg_rating(rating_type)
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO ratings (id, rating_type, rating_description, pos_neg_type) VALUES("
+                + str(user_id) + ", '"
+                + rating_type + "', '"
+                + message_description + "', '"
+                + pos_neg_type + "');")
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    return render_template("finish_rating_action.html", owner=user, message=rating_type,
+                           description=message_description)
 
 
 def connect_to_db():
@@ -334,7 +416,8 @@ def login_post():
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
     password.encode('utf-8')
-    if not user or not bcrypt.check_password_hash(user.password, password.encode('utf-8')): # , '@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.'):
+    if not user or not bcrypt.check_password_hash(user.password,
+                                                  password.encode('utf-8')):  # , '@:vkf7s(WO9As8xsEo2_Zsd?fzcZb.'):
         flash('Please check your login details and try again.')
         return redirect(url_for('login'))
 

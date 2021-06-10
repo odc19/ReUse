@@ -20,6 +20,11 @@ Home
                         <h2> {{ post_with_type['type'] }} </h2>
                         Title: {{ post_with_type['post']['title'] }}
                         <br>
+                        {% if post_with_type['post']['reserved'] %}
+                            <font color="red"> THIS POST IS RESERVED </font>
+                            <br>
+                        {% endif %}
+                        <br>
                         Description: {{ post_with_type['post']['description'] }}
                         <br>
                         Posted on: {{ post_with_type['post']['date'] }}

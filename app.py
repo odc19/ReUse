@@ -135,6 +135,7 @@ def index():
     posts_with_types = []
     posts_type = request.args.get('posts_type')
     poster = request.args.get('poster')
+    see_reserved_posts = request.args.get('reserved_post')
     sort_by = request.args.get('sort_by')
     category = request.args.get("category")
     condition = request.args.get("condition")
@@ -148,6 +149,8 @@ def index():
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
+
+    print("see_reserved_posts = ", see_reserved_posts)
 
     if not posts_type:
         posts_type = "all"
@@ -178,7 +181,8 @@ def index():
             post_obj = make_post_class(post, "Request")
             if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
                 if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
-                    posts_with_types.append({"post": post_obj, "type": "Request"})
+                    if see_reserved_posts == "yes" or not post_obj.reserved:
+                        posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
         if category:
@@ -204,7 +208,8 @@ def index():
             if not condition or post_obj.condition == condition or in_range(post_obj.location, location, location_range):
                 if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
                     if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
-                        posts_with_types.append({"post": post_obj, "type": "Donation"})
+                        if see_reserved_posts == "yes" or not post_obj.reserved:
+                            posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)
@@ -450,8 +455,6 @@ def view_my_post(my_post_id, my_post_type):
 
 @app.route("/reserved_post/<reserved_person>")
 def reserved_post(reserved_person):
-    reserved_id = get_user_id_from_name(reserved_person)
-    cur, conn = connect_to_db()
     return render_template("reserved_post.html", reserved_person=reserved_person)
 
 

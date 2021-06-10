@@ -13,8 +13,7 @@ donation
 {% endblock post_type %}
 
 {% block extra_fields %}
-<label> What is the condition of the item? </label> <input type="text" id="post_condition_description" name="post_condition_description">
-<br>
+
 <input type="radio" id="new" name="post_condition" value="new" />
 <label for="new"> New </label>
 <br>
@@ -23,6 +22,8 @@ donation
 <br>
 <input type="radio" id="damaged" name="post_condition" value="damaged" />
 <label for="damaged"> Damaged </label>
+<br>
+<label> Additional information about condition: </label> <input type="text" id="post_condition_description" name="post_condition_description">
 <br>
 <button class="button"> Add images </button>
 <br>

@@ -66,6 +66,15 @@ def query_2_words(word1, word2, table, col1, col2):
         return "SELECT " + don_fields + " FROM " + table + " WHERE " \
                + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
 
+def get_user_id_from_name(user_name):
+    conn, cur = connect_to_db()
+    cur.execute("SELECT id FROM users WHERE name = '" + user_name + "';")
+    user_id = cur.fetchone()(0)
+    conn.commit()
+    cur.close()
+    conn.close()
+    return user_id
+
 
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
@@ -170,7 +179,41 @@ def report_user(user):
 def finish_report_action(user):
     message_description = request.args.get("report_description")
     message_type = request.args.get("message")
+    """
+    user_id = get_user_id_from_name(user)
+    print(user_id)
+    print(message_type)
+    print(message_description)
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO reports (id, message_type, report_description) VALUES("
+                + str(user_id) + ", '"
+                + message_type + "', '"
+                + message_description + "');")
+    conn.commit()
+
+    cur.close()
+    conn.close()
+"""
     return render_template("finish_report_action.html", owner=user, message=message_type, description=message_description)
+
+@app.route("/post_id/post_type/user_profile_<user>/rating/finish_rating")
+def finish_rating_action(user):
+    message_description = request.args.get("rating_description")
+    rating_type = request.args.get("message")
+    """
+    user_id = get_user_id_from_name(user)
+    conn, cur = connect_to_db()
+    cur.execute("INSERT INTO ratings (id, rating_type, rating_description) VALUES("
+                + str(user_id) + ", '"
+                + rating_type + "', '"
+                + message_description + "');")
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    
+    """
+    return render_template("finish_rating_action.html", owner=user, message=rating_type, description=message_description)
 
 def connect_to_db():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)

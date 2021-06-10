@@ -8,3 +8,4 @@ flask-login==0.4.1
 flask-hashing==1.0
 flask-bcrypt==0.7.1
 opencage==1.2.2
+haversine==2.3.1

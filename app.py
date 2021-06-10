@@ -12,7 +12,7 @@ DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
 DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
-salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
+# salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
 
 app = Flask(__name__)
 # hashing = Hashing(app)
@@ -390,7 +390,7 @@ def signup_post():
         return redirect(url_for('signup'))
 
     password.encode('utf-8')
-    hashed_password = bcrypt.generate_password_hash(password.encode('utf-8'), salt).decode("utf-8")
+    hashed_password = bcrypt.generate_password_hash(password.encode('utf-8')).decode("utf-8")
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO users (name, password, email) VALUES('"
                 + name + "', '"

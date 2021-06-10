@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
 # from flask_hashing import Hashing
+from haversine import haversine,Unit
 from opencage.geocoder import OpenCageGeocode
 import psycopg2
 from flask_bcrypt import Bcrypt
+from datetime import date
 
 from post import post_donation, post_request
 from models import User
@@ -39,8 +41,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
 req_table = "requests"
 don_table = "donations"
-req_fields = "id, person_id, title, category, description, location, reserved"
-don_fields = "id, person_id, title, category, description, location, reserved, condition, condition_description"
+req_fields = "id, person_id, title, category, description, location, reserved, date"
+don_fields = "id, person_id, title, category, description, location, reserved, date, condition, condition_description"
 
 
 def init_table_posts():
@@ -52,7 +54,6 @@ def init_table_posts():
 
 
 def query_word(word, table, col):
-    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
                + col + " LIKE '%" + word + "%' "
@@ -61,7 +62,6 @@ def query_word(word, table, col):
 
 
 def query_2_words(word1, word2, table, col1, col2):
-    # return "SELECT * FROM " + table + " WHERE " + col + " LIKE '%" + word + "%' ;"
     if table == req_table:
         return "SELECT " + req_fields + " FROM " + table + " WHERE " \
                + col1 + " LIKE '%" + word1 + "%' AND " + col2 + " LIKE '%" + word2 + "%' "
@@ -78,29 +78,52 @@ def make_post_class(query_post, post_type):
     description = query_post[4]
     location = query_post[5]
     reserved = query_post[6]
+    date = query_post[7]
 
     if post_type == "Donation":
-        condition = query_post[7]
-        condition_description = query_post[8]
-        return post_donation(post_id, person_id, title, category, description, location, reserved, condition,
-                             condition_description)
+        condition = query_post[8]
+        condition_description = query_post[9]
+        return post_donation(post_id, person_id, title, category, description, location, reserved, date,
+                             condition, condition_description)
     else:
-        return post_request(post_id, person_id, title, category, description, location, reserved)
+        return post_request(post_id, person_id, title, category, description, location, reserved, date)
+
+
+def in_range(location1, location2, location_range):
+    forward1 = geocoder.geocode(location1)
+    lng1 = forward1[0]['geometry']['lng']
+    lat1 = forward1[0]['geometry']['lat']
+    forward2 = geocoder.geocode(location2)
+    lng2 = forward2[0]['geometry']['lng']
+    lat2 = forward2[0]['geometry']['lat']
+    return haversine((lng1, lat1), (lng2, lat2)) <= location_range
 
 
 @app.route("/")
 def index():
     key_word = request.args.get("search_sentence")
+
     if not key_word:
         key_word = ""
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    cur = conn.cursor()
+
+    key_words = key_word.split()
+
+    if len(key_words) > 0:
+        first_word = key_words[0]
+    else:
+        first_word = ""
 
     posts_with_types = []
     posts_type = request.args.get('posts_type')
     sort_by = request.args.get('sort_by')
     category = request.args.get("category")
     condition = request.args.get("condition")
+
+    location = request.args.get("location")
+    location_range = request.args.get("location_range")
+
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
 
     if not posts_type:
         posts_type = "all"
@@ -110,13 +133,20 @@ def index():
 
     if posts_type == "all" or posts_type == "request":
         if category:
-            query = query_2_words(key_word, category, req_table, "description", "category")
+            query = query_2_words(first_word, category, req_table, "description", "category")
         else:
-            query = query_word(key_word, req_table, "description")
+            query = query_word(first_word, req_table, "description")
+        if len(key_words) >= 2:
+            for i in (1, len(key_words) - 1):
+                query += " UNION "
+                if category:
+                    query += query_2_words(key_words[i], category, req_table, "description", "category")
+                else:
+                    query += query_word(key_words[i], req_table, "description")
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
         if sort_by == "Date":
-            query += "ORDER BY date DESC"
+            query += " ORDER BY date DESC"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()
@@ -126,19 +156,26 @@ def index():
 
     if posts_type == "all" or posts_type == "donation":
         if category:
-            query = query_2_words(key_word, category, don_table, "description", "category")
+            query = query_2_words(first_word, category, don_table, "description", "category")
         else:
-            query = query_word(key_word, don_table, "description")
+            query = query_word(first_word, don_table, "description")
+        if len(key_words) >= 2:
+            for i in (1, len(key_words) - 1):
+                query += " UNION "
+                if category:
+                    query += query_2_words(key_words[i], category, don_table, "description", "category")
+                else:
+                    query += query_word(key_words[i], don_table, "description")
         if current_user.is_authenticated:
             query += "AND person_id != " + str(current_user.user_id)
         if sort_by == "Date":
-            query += "ORDER BY date DESC"
+            query += " ORDER BY date DESC"
         query += ";"
         cur.execute(query)
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")
-            if not condition or post_obj.condition == condition:
+            if not condition or post_obj.condition == condition or in_range(post_obj.location, location, location_range):
                 posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
@@ -183,6 +220,7 @@ def successful_post(post_type):
     location = request.args.get('post_location')
     description = request.args.get('post_description')
     category = request.args.get('post_category')
+    today = date.today().strftime('%Y-%m-%d')
 
     print("\n")
     print(current_user.user_id)
@@ -195,14 +233,17 @@ def successful_post(post_type):
     print("\n")
     print(location)
     print("\n")
+    print(today)
+    print("\n")
 
     if post_type == "request":
-        cur.execute("INSERT INTO requests (person_id, title, description, category, location) VALUES("
+        cur.execute("INSERT INTO requests (person_id, title, description, category, location, date) VALUES("
                     + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
                     + category + "', '"
-                    + location + "')")
+                    + location + "', '"#CONVERT(datetime, '"
+                    + today + "');")
     else:
         condition = request.args.get('post_condition')
         condition_description = request.args.get('post_condition_description')
@@ -215,7 +256,8 @@ def successful_post(post_type):
                     + category + "', '"
                     + location + "', '"
                     + condition + "', '"
-                    + condition_description + "')")
+                    + condition_description + "', '"#CONVERT(datetime, '"
+                    + today + "');")
 
     conn.commit()
     conn.close()

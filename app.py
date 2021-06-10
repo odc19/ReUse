@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
 # from flask_hashing import Hashing
 from opencage.geocoder import OpenCageGeocode
-from flask_googlemaps import GoogleMaps, Map
 import psycopg2
 from flask_bcrypt import Bcrypt
 

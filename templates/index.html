@@ -18,17 +18,17 @@
     <form action="{{ url_for('index') }}">
         <input type="text" id="search_sentence" name="search_sentence" placeholder="Search...">
         <br>
-        <label style="color: black;"> Sort by: </label>
-        <select name="sort_by" id="sort_by">
-            <option value="no_sort"> Do not sort </option>
-            <option value="Date"> Date </option>
-        </select>
-        <br>
         <label style="color: black;"> Post type: </label>
         <select name="posts_type" id="posts_type">
             <option value="all"> All </option>
             <option value="donation"> Donation </option>
             <option value="request"> Request </option>
+        </select>
+        <br>
+        <label style="color: black;"> Sort by: </label>
+        <select name="sort_by" id="sort_by">
+            <option value="no_sort"> Do not sort </option>
+            <option value="Date"> Date </option>
         </select>
         <br>
         <label style="color: black"> Select category: </label>
@@ -68,6 +68,15 @@
             <input name="condition" value="used" type="radio"> used <br>
             <input name="condition" value="damaged" type="radio"> damaged <br>
         </div>
+        <br>
+        <br>
+        <label style="color: black"> Select location: </label>
+        <br>
+        <input type="text" name="location" id="location">
+        <br>
+        <label type="text" style="color: black"> Select location range (in km): </label>
+        <br>
+        <input type="text" name="location_range" id="location_range">
         <br>
         <button class="button" type="submit"> Search! </button>
     </form>

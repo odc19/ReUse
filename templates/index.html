@@ -2,18 +2,19 @@
 
 {% block header %}
     <style>
-        .div_category {
+        .div_radio {
             align: left;
             display: inline-block;
             color: black;
-            margin: 2em;
+            margin-left: 2em;
+            margin-right: 2em;
         }
     </style>
 {% endblock header %}
 
 {% block content %}
 
-<div style="text-align: center;">
+<div style="text-align: left;">
     <form action="{{ url_for('index') }}">
         <input type="text" id="search_sentence" name="search_sentence" placeholder="Search...">
         <br>
@@ -24,31 +25,42 @@
             <option value="request"> Request </option>
         </select>
         <br>
+        <label style="color: black"> Select category: </label>
+        <br>
         <div style="display: inline-block; align: left; text-align: left;">
-            <div class="div_category">
+            <div class="div_radio">
                 <input name="category" value="clothes" type="radio"> clothes <br>
                 <input name="category" value="books" type="radio"> books <br>
                 <input name="category" value="toys" type="radio"> toys <br>
                 <input name="category" value="sports" type="radio"> sports <br>
             </div>
-            <div class="div_category">
+            <div class="div_radio">
                 <input name="category" value="gaming" type="radio"> gaming <br>
                 <input name="category" value="school" type="radio"> school <br>
                 <input name="category" value="furniture" type="radio"> furniture <br>
                 <input name="category" value="perishables" type="radio"> perishables <br>
             </div>
-            <div class="div_category">
+            <div class="div_radio">
                 <input name="category" value="kitchen ware" type="radio"> kitchen ware <br>
                 <input name="category" value="self care" type="radio"> self care <br>
                 <input name="category" value="cars" type="radio"> card <br>
                 <input name="category" value="electronics" type="radio"> electronics <br>
             </div>
-            <div class="div_category">
+            <div class="div_radio">
                 <input name="category" value="gardening" type="radio"> gardening <br>
                 <input name="category" value="other" type="radio"> other <br>
                 <br>
                 <br>
             </div>
+        </div>
+        <br>
+        <br>
+        <label style="color: black"> Select condition (donations only): </label>
+        <br>
+        <div class="div_radio" style="display: inline-block; align: left; text-align: left;">
+            <input name="condition" value="new" type="radio"> new <br>
+            <input name="condition" value="used" type="radio"> used <br>
+            <input name="condition" value="damaged" type="radio"> damaged <br>
         </div>
         <br>
         <button class="button" type="submit"> Search! </button>

@@ -99,6 +99,7 @@ def index():
     posts_with_types = []
     posts_type = request.args.get('posts_type')
     category = request.args.get("category")
+    condition = request.args.get("condition")
 
     if not posts_type:
         posts_type = "all"
@@ -132,7 +133,8 @@ def index():
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")
-            posts_with_types.append({"post": post_obj, "type": "Donation"})
+            if not condition or post_obj.condition == condition:
+                posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)

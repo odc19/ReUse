@@ -105,14 +105,16 @@ def make_post_class(query_post, post_type):
         return post_request(post_id, person_id, title, category, description, location, reserved, date)
 
 
-def in_range(location1, location2, location_range):
-    forward1 = geocoder.geocode(location1)
-    lng1 = forward1[0]['geometry']['lng']
-    lat1 = forward1[0]['geometry']['lat']
-    forward2 = geocoder.geocode(location2)
-    lng2 = forward2[0]['geometry']['lng']
-    lat2 = forward2[0]['geometry']['lat']
-    return haversine((lng1, lat1), (lng2, lat2)) <= location_range
+def in_range(lng_location, lat_location, location2, location_range):
+    try:
+        forward = geocoder.geocode(location2)
+        lng = forward[0]['geometry']['lng']
+        lat = forward[0]['geometry']['lat']
+        print(lng_location)
+        print(lat_location)
+        return haversine((lng_location, lat_location), (lng, lat)) <= int(location_range)
+    except:
+        return False
 
 
 @app.route("/")
@@ -137,6 +139,10 @@ def index():
 
     location = request.args.get("location")
     location_range = request.args.get("location_range")
+    if location:
+        forward = geocoder.geocode(location)
+        lng_location = forward[0]['geometry']['lng']
+        lat_location = forward[0]['geometry']['lat']
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
@@ -168,7 +174,8 @@ def index():
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
-            posts_with_types.append({"post": post_obj, "type": "Request"})
+            if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
+                posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
         if category:
@@ -192,7 +199,8 @@ def index():
         for post in posts:
             post_obj = make_post_class(post, "Donation")
             if not condition or post_obj.condition == condition or in_range(post_obj.location, location, location_range):
-                posts_with_types.append({"post": post_obj, "type": "Donation"})
+                if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
+                    posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)

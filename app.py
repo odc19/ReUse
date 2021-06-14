@@ -77,12 +77,14 @@ def get_user_id_from_name(user_name):
     conn.close()
     return user_id
 
+
 def get_pos_neg_rating(message):
     if message == "Trustworthy" or message == "Met on time" or message == "They were kind, polite":
         return "positive"
     elif message == "Other":
         return "neutral"
     return "negative"
+
 
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
@@ -161,12 +163,51 @@ def index():
 
 @app.route("/abc")
 def new_post():
-    return render_template("new_post.html", given_text="YAAAY!!! FINALLY")
+    return render_template("new_post.html", given_text="YAAAY!!! ")
+
+
+def get_overall_rating(ratings):
+    pos_no = 0
+    neg_no = 0
+    neu_no = 0
+    all_no = len(ratings)
+
+    if all_no == 0:
+        return "No feedback collected yet"
+
+    for rating in ratings:
+        r = rating[3]
+        if r == "positive":
+            pos_no += 1
+        elif r == "negative":
+            neg_no += 1
+        else:
+            neu_no += 1
+    if pos_no + neu_no < all_no / 2:
+        return str(neg_no) + "/" + str(all_no) + " negative feedback"
+
+    return str(pos_no) + "/" + str(all_no) + " positive feedback"
 
 
 @app.route("/post_id/post_type/user_profile_<user>")
 def other_user_profile(user):
-    return render_template("other_user_profile.html", owner=user)
+    rating_list = []
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
+    cur = conn.cursor()
+    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = " + str(
+        get_user_id_from_name(user)) + ";"
+    cur.execute(query)
+    ratings = cur.fetchall()
+    print(ratings)
+    for rating in ratings:
+        rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
+        rating_list.append({"rating_obj":rating_obj})
+    conn.commit()
+    cur.close()
+    conn.close()
+    rating_message = get_overall_rating(ratings)
+    return render_template("other_user_profile.html", rating_list=rating_list, rating_message=rating_message,
+                           owner=user)
 
 
 @app.route("/post_id/post_type/user_profile_<user>/rating")
@@ -184,13 +225,14 @@ def see_all_ratings(user):
     rating_list = []
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
-    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = "+str(get_user_id_from_name(user))+";"
+    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = " + str(
+        get_user_id_from_name(user)) + ";"
     cur.execute(query)
     ratings = cur.fetchall()
     print(ratings)
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
-        rating_list.append({"rating_obj": rating_obj})
+        rating_list.append({"rating_obj":rating_obj})
     conn.commit()
     cur.close()
     conn.close()

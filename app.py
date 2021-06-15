@@ -166,6 +166,24 @@ def new_post():
     return render_template("new_post.html", given_text="YAAAY!!! ")
 
 
+def get_full_stars_rating(pos_neu_no, neg_no):
+    total = pos_neu_no + neg_no
+    if total == 0:
+        return 0
+    ratio = (pos_neu_no / total) * 5
+    if ratio < 0.5:
+        return 0
+    if ratio >= 0.5 and ratio < 1.5:
+        return 1
+    elif ratio >= 1.5 and ratio < 2.5:
+        return 2
+    elif ratio >= 2.5 and ratio < 3.5:
+        return 3
+    elif ratio >= 3.5 and ratio < 4.5:
+        return 4
+    return 5
+
+
 def get_overall_rating(ratings):
     pos_no = 0
     neg_no = 0
@@ -173,7 +191,7 @@ def get_overall_rating(ratings):
     all_no = len(ratings)
 
     if all_no == 0:
-        return "No feedback collected yet"
+        return 0
 
     for rating in ratings:
         r = rating[3]
@@ -183,10 +201,7 @@ def get_overall_rating(ratings):
             neg_no += 1
         else:
             neu_no += 1
-    if pos_no + neu_no < all_no / 2:
-        return str(neg_no) + "/" + str(all_no) + " negative feedback"
-
-    return str(pos_no) + "/" + str(all_no) + " positive feedback"
+    return pos_no + neu_no
 
 
 @app.route("/post_id/post_type/user_profile_<user>")
@@ -201,13 +216,22 @@ def other_user_profile(user):
     print(ratings)
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
-        rating_list.append({"rating_obj":rating_obj})
+        rating_list.append({"rating_obj": rating_obj})
     conn.commit()
     cur.close()
     conn.close()
-    rating_message = get_overall_rating(ratings)
-    return render_template("other_user_profile.html", rating_list=rating_list, rating_message=rating_message,
-                           owner=user)
+    pos_neu_no = get_overall_rating(ratings)
+    all_no = len(ratings)
+    neg_no = all_no - pos_neu_no
+    full_stars = get_full_stars_rating(pos_neu_no, neg_no)
+    fake_full_stars_list = []
+    for i in range(0, full_stars):
+        fake_full_stars_list.append({"fake_star_obj"})
+    fake_empty_stars_list = []
+    for i in range(0, 5 - full_stars):
+        fake_empty_stars_list.append({"fake_star_obj"})
+    return render_template("other_user_profile.html", rating_list=rating_list, full_stars=fake_full_stars_list,
+                           empty_stars=fake_empty_stars_list, owner=user)
 
 
 @app.route("/post_id/post_type/user_profile_<user>/rating")
@@ -232,7 +256,7 @@ def see_all_ratings(user):
     print(ratings)
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
-        rating_list.append({"rating_obj":rating_obj})
+        rating_list.append({"rating_obj": rating_obj})
     conn.commit()
     cur.close()
     conn.close()

@@ -184,24 +184,38 @@ def get_full_stars_rating(pos_neu_no, neg_no):
     return 5
 
 
-def get_overall_rating(ratings):
-    pos_no = 0
+def get_negative_rating(ratings):
     neg_no = 0
+    all_no = len(ratings)
+
+    for rating in ratings:
+        r = rating[3]
+        if r == "negative":
+            neg_no += 1
+    return neg_no
+
+
+def get_neutral_rating(ratings):
     neu_no = 0
     all_no = len(ratings)
 
-    if all_no == 0:
-        return 0
+    for rating in ratings:
+        r = rating[3]
+        if r == "neutral":
+            neu_no += 1
+    return neu_no
+
+
+def get_positive_ratings(ratings):
+    pos_no = 0
+    all_no = len(ratings)
 
     for rating in ratings:
         r = rating[3]
         if r == "positive":
             pos_no += 1
-        elif r == "negative":
-            neg_no += 1
-        else:
-            neu_no += 1
-    return pos_no + neu_no
+
+    return pos_no
 
 
 @app.route("/post_id/post_type/user_profile_<user>")
@@ -220,18 +234,29 @@ def other_user_profile(user):
     conn.commit()
     cur.close()
     conn.close()
-    pos_neu_no = get_overall_rating(ratings)
+    pos_no = get_positive_ratings(ratings)
+    neu_no = get_neutral_rating(ratings)
+    neg_no = get_negative_rating(ratings)
+    pos_neu_no = pos_no + neu_no
     all_no = len(ratings)
-    neg_no = all_no - pos_neu_no
     full_stars = get_full_stars_rating(pos_neu_no, neg_no)
+
     fake_full_stars_list = []
     for i in range(0, full_stars):
         fake_full_stars_list.append({"fake_star_obj"})
+
     fake_empty_stars_list = []
     for i in range(0, 5 - full_stars):
         fake_empty_stars_list.append({"fake_star_obj"})
+
+    rating_message = "This user doesn't have any ratings yet."
+
+    if (not all_no == 0) and pos_neu_no < all_no / 2:
+        rating_message = str(neg_no) + "/" + str(all_no) + " negative ratings"
+    elif not all_no == 0:
+        rating_message = str(pos_no) + "/" + str(all_no) + " positive ratings"
     return render_template("other_user_profile.html", rating_list=rating_list, full_stars=fake_full_stars_list,
-                           empty_stars=fake_empty_stars_list, owner=user)
+                           empty_stars=fake_empty_stars_list, rating_message=rating_message, owner=user)
 
 
 @app.route("/post_id/post_type/user_profile_<user>/rating")

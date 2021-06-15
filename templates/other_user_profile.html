@@ -27,6 +27,7 @@
 
 
 
+
 </style>
 {% endblock header %}
 
@@ -40,8 +41,8 @@
     <br>
 </div>
 <div style="text-align: left; display:inline-block; width:70%;">
+    <p style="color:black; font-size: 1em;"> Rating: {{ rating_message }}</p>
     {% if rating_list %}
-    <p style="color:black; font-size: 1em;"> Rating: </p>
     {% for i in full_stars %}
     <span style="font-size:250%;color:yellow;">&starf;</span>
     {% endfor %}
@@ -52,8 +53,6 @@
     <a href="{{ url_for('see_all_ratings', user=owner) }}" style="color: black;font-size:10px;">
         <u> See all ratings </u>
     </a>
-    {% else %}
-    <p style="color:black; font-size: 1em;"> Rating: <i>  This user doesn't have any ratings yet.  </i> </p>
     {% endif %}
 
     <br>

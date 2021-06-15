@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title> {{ post['title'] }} </title>
-        <style>
+<head>
+    <meta charset="UTF-8">
+    <title> {{ post['title'] }} </title>
+    <style>
             body {
                     background-color: rgb(208, 225, 206);
             }
@@ -17,61 +17,65 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
-        </style>
-    </head>
-    <body>
-        <br>
-        <br>
-        <br>
-        <br>
-        <div style="background-color: #ECF3EB; color: black; padding-left: 5em">
-            <br>
-            <br>
-            {% block post_type %}{% endblock post_type %}
-            <br>
-            <br>
-            Owner of the post:
-            <a href="url">{{ owner[0] }}</a>
-            <br>
-            <br>
-            Email: {{ owner[1] }}
-            <br>
-            <br>
-            Title: {{ post['title'] }}
-            <br>
-            <br>
-            Description: {{ post['description'] }}
-            <br>
-            <br>
-            Category: {{ post['category'] }}
-            <br>
-            <br>
-            Location: {{ post['location'] }} <form action="{{ url_for('mapview',loc=post['location']) }}">
-                <button class="button" type="submit"> See location on map! </button> </form>
 
-            {% block other_fields %}{% endblock other_fields %}
-            <br>
-            <br>
 
-            People interested:
-            <ul>
-            {% for interested_person in interested_people %}
-                <li> {{ interested_person[0] }} ; {{ interested_person[1] }} </li>
-            {% endfor %}
-            </ul>
+    </style>
+</head>
+<body>
+<br>
+<br>
+<br>
+<br>
+<div style="background-color: #ECF3EB; color: black; padding-left: 5em">
+    <br>
+    <br>
+    {% block post_type %}{% endblock post_type %}
+    <br>
+    <br>
+    Owner of the post:
+    <a href="url">{{ owner[0] }}</a>
+    <br>
+    <br>
+    Email: {{ owner[1] }}
+    <br>
+    <br>
+    Title: {{ post['title'] }}
+    <br>
+    <br>
+    Description: {{ post['description'] }}
+    <br>
+    <br>
+    Category: {{ post['category'] }}
+    <br>
+    <br>
+    Location: {{ post['location'] }}
+    <form action="{{ url_for('mapview',loc=post['location']) }}">
+        <button class="button" type="submit"> See location on map!</button>
+    </form>
 
-            <br>
-            <br>
-            <form action={% block interested_button %}{% endblock interested_button %}>
-                <button class="button" >
-                    <p style="color:black">
-                        {% block submit_button %}{% endblock submit_button %}
-                        <br>
-                    </p>
-                </button>
-            </form>
-            <br>
-            <br>
-        </div>
-    </body>
+    {% block other_fields %}{% endblock other_fields %}
+    <br>
+    <br>
+    {% if interested_people %}
+    People interested:
+    <ul>
+        {% for interested_person in interested_people %}
+        <li> {{ interested_person[0] }} ; {{ interested_person[1] }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <br>
+    <br>
+    <form action={% block interested_button %}{% endblock interested_button %}>
+        <button class="button">
+            <p style="color:black">
+                {% block submit_button %}{% endblock submit_button %}
+                <br>
+            </p>
+        </button>
+    </form>
+    <br>
+    <br>
+</div>
+</body>
 </html>

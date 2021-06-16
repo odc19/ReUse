@@ -82,12 +82,14 @@ def get_user_id_from_name(user_name):
     conn.close()
     return user_id
 
+
 def get_pos_neg_rating(message):
     if message == "Trustworthy" or message == "Met on time" or message == "They were kind, polite":
         return "positive"
     elif message == "Other":
         return "neutral"
     return "negative"
+
 
 def make_post_class(query_post, post_type):
     post_id = query_post[0]
@@ -618,19 +620,24 @@ def my_donations():
     cur.execute("SELECT " + don_fields + " FROM " + don_table + " WHERE person_id = " + str(current_user.user_id) + ";")
 
     my_donations_with_types = []
+    my_timeouted_donations_with_types = []
 
     donations = cur.fetchall()
     for d in donations:
         my_donation_obj = make_post_class(d, "Donation")
         print(my_donation_obj.description)
-        my_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
+        if post_timeout(my_donation_obj.date):
+            my_timeouted_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
+        else:
+            my_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
 
     conn.commit()
 
     cur.close()
     conn.close()
 
-    return render_template("my_donations.html", my_donations_with_types=my_donations_with_types)
+    return render_template("my_donations.html", my_donations_with_types=my_donations_with_types,
+                           my_timeouted_donations_with_types=my_timeouted_donations_with_types)
 
 
 @app.route("/my_requests")
@@ -639,24 +646,57 @@ def my_requests():
     cur.execute("SELECT " + req_fields + " FROM " + req_table + " WHERE person_id = " + str(current_user.user_id) + ";")
 
     my_requests_with_types = []
+    my_timeouted_requests_with_types = []
 
     requests = cur.fetchall()
     for r in requests:
         my_request_obj = make_post_class(r, "Request")
         print(my_request_obj.description)
-        my_requests_with_types.append({"post": my_request_obj, "type": "Request"})
+        if post_timeout(my_request_obj.date):
+            my_timeouted_requests_with_types.append({"post": my_request_obj, "type": "Request"})
+        else:
+            my_requests_with_types.append({"post": my_request_obj, "type": "Request"})
 
     conn.commit()
 
     cur.close()
     conn.close()
 
-    return render_template("my_requests.html", my_requests_with_types=my_requests_with_types)
+    return render_template("my_requests.html", my_requests_with_types=my_requests_with_types,
+                           my_timeouted_requests_with_types=my_timeouted_requests_with_types)
 
 
 @app.route("/my_posts")
 def my_posts():
     return render_template("index.html")
+
+
+@app.route("/activated_post/<my_post_id>/<my_post_type>")
+def activated_post(my_post_id, my_post_type):
+    today = date.today().strftime('%Y-%m-%d')
+
+    conn, cur = connect_to_db()
+
+    if my_post_type == "Request":
+        table = req_table
+        fields = req_fields
+    else:
+        table = don_table
+        fields = don_fields
+
+    cur.execute("SELECT " + fields + " FROM " + table + " WHERE id = " + my_post_id + ";")
+
+    my_post = cur.fetchone()
+    my_post_obj = make_post_class(my_post, my_post_type)
+
+    cur.execute("UPDATE " + table + " SET date = '" + today + "' WHERE id = " + my_post_id + ";")
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return render_template("activated_post.html", post={"post": my_post_obj, "type": my_post_type})
 
 
 def get_table_rows(table):

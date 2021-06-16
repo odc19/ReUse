@@ -17,4 +17,24 @@
         </div>
         <br>
     {% endfor %}
+
+    <br> <font color="black"> These following posts older than 90 days. They have been automatically deactivated after 90 days, but you can
+        reactivate them by clicking on the ACTIVATE button. </font> <br> <br>
+
+    {% for my_timeouted_request_with_type in my_timeouted_requests_with_types %}
+        <div style="color: black; text-align: left; background-color: #ECF3EB; padding: 1em 3em; width: 70%;margin-left: auto; margin-right: auto; border-radius: 4px;">
+            <form action="{{ url_for('view_my_post', my_post_id=my_timeouted_request_with_type['post']['id'], my_post_type=my_timeouted_request_with_type['type']) }}">
+                <h2> {{ my_timeouted_request_with_type['type'] }} </h2>
+                Title: {{ my_timeouted_request_with_type['post']['title'] }}
+                <br>
+                Description: {{ my_timeouted_request_with_type['post']['description'] }}
+                <br>
+                <button class="button" type="submit"> View request </button>
+            </form>
+            <form action="{{ url_for('activated_post', my_post_id=my_timeouted_request_with_type['post']['id'], my_post_type=my_timeouted_request_with_type['type']) }}">
+                <button class="button" type="submit"> ACTIVATE </button>
+            </form>
+        </div>
+        <br>
+    {% endfor %}
 {% endblock content %}

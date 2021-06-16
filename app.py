@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import current_user, LoginManager, login_user, logout_user, login_required
-# from flask_hashing import Hashing
 from haversine import haversine,Unit
 from opencage.geocoder import OpenCageGeocode
+
 import psycopg2
+from datetime import datetime
+
 from flask_bcrypt import Bcrypt
 from datetime import date
 
@@ -119,6 +121,22 @@ def in_range(lng_location, lat_location, location2, location_range):
         return False
 
 
+def post_timeout(date):
+    currentDate = datetime.now()
+
+    dateDatetime = datetime(
+                            year=date.year,
+                            month=date.month,
+                            day=date.day,
+                           )
+
+    print(currentDate)
+    print(dateDatetime)
+    print((currentDate - dateDatetime).days)
+
+    return (currentDate - dateDatetime).days >= 90
+
+
 @app.route("/")
 def index():
     key_word = request.args.get("search_sentence")
@@ -183,7 +201,8 @@ def index():
             if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
                 if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
                     if see_reserved_posts == "yes" or not post_obj.reserved:
-                        posts_with_types.append({"post": post_obj, "type": "Request"})
+                        if not post_timeout(post_obj.date):
+                            posts_with_types.append({"post": post_obj, "type": "Request"})
 
     if posts_type == "all" or posts_type == "donation":
         if category:
@@ -210,7 +229,8 @@ def index():
                 if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
                     if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
                         if see_reserved_posts == "yes" or not post_obj.reserved:
-                            posts_with_types.append({"post": post_obj, "type": "Donation"})
+                            if not post_timeout(post_obj.date):
+                                posts_with_types.append({"post": post_obj, "type": "Donation"})
 
     for post_with_type in posts_with_types:
         print(post_with_type)

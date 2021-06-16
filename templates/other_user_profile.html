@@ -39,7 +39,7 @@
     <p style="color:black;font-size:20px;">
         <i> Rating: </i>
     </p>
-    <a href="{{ url_for('see_all_ratings', user=owner) }}" style="color: black;font-size:10px;">
+    <a style="font-size: 23px; color: black" href="{{ url_for('see_all_ratings', user=owner) }}" style="color: black;font-size:10px;">
         See all ratings
     </a>
     </p>
@@ -55,12 +55,12 @@
     <br>
 </div>
 <div style="text-align: right; display:inline-block; ">
-    <form action="{{ url_for('send_message', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>
-    </form>
-    <form action="{{ url_for('user_rating', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>
-    </form>
+<!--    <form action="{{ url_for('send_message', user=owner) }}">-->
+<!--        <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>-->
+<!--    </form>-->
+<!--    <form action="{{ url_for('user_rating', user=owner) }}">-->
+<!--        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>-->
+<!--    </form>-->
     <form action="{{ url_for('report_user', user=owner) }}">
         <button class="button2" type="submit" style="margin-right: 30px;"> Report {{ owner }}</button>
     </form>

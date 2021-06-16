@@ -445,14 +445,15 @@ def view_my_post(my_post_id, my_post_type):
     my_post_obj = make_post_class(my_post, my_post_type)
 
     if my_post_type == "Donation":
-        cur.execute("SELECT DISTINCT name, email FROM interested_donations "
+        cur.execute("SELECT DISTINCT name, email, users.id FROM interested_donations "
                     + "INNER JOIN users ON interested_donations.interested_id = users.id "
                     + "AND interested_donations.post_id = " + my_post_id + ";")
     else:
-        cur.execute("SELECT DISTINCT name, email FROM interested_requests "
+        cur.execute("SELECT DISTINCT name, email, users.id FROM interested_requests "
                     + "INNER JOIN users ON interested_requests.interested_id = users.id "
                     + "AND interested_requests.post_id = " + my_post_id + ";")
     interested_people = cur.fetchall()
+    print(interested_people)
 
     query = "SELECT reserved from " + table + " WHERE id = " + my_post_id + ";"
     cur.execute(query)
@@ -466,14 +467,27 @@ def view_my_post(my_post_id, my_post_type):
 
     if my_post_type == "Request":
         return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
     else:
         return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
 
 
-@app.route("/reserved_post/<reserved_person>")
-def reserved_post(reserved_person):
+@app.route("/reserved_post/<reserved_person>/my_post_<post_id>_<post_type>")
+def reserved_post(reserved_person, post_id, post_type):
+    reserved_id = get_user_id_from_name(reserved_person)
+    conn, cur = connect_to_db()
+
+    if post_type == "Request":
+        cur.execute("UPDATE requests SET reserved = " + str(reserved_id) + " WHERE id = " + post_id + " ;")
+
+    else:
+        cur.execute("UPDATE donations SET reserved = " + str(reserved_id) + " WHERE id = " + post_id + " ;")
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
     return render_template("reserved_post.html", reserved_person=reserved_person)
 
 

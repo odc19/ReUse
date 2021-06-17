@@ -23,16 +23,22 @@ Profile
     }
   </style>
 
-  <h1 class="title" style="color: black;">
+  <h1 class="title" style="color: black; ">
     Welcome, {{ name }}!
   </h1>
-  <h2>
+  <font size="5px" color="black">
     Email: {{ email }}
-  </h2>
+  </font>
+  <br>
+  <br>
   <form action="{{ url_for('my_donations') }}">
     <button class="button" type="submit"> My donations </button>
   </form>
   <form action="{{ url_for('my_requests') }}">
     <button class="button" type="submit"> My requests </button>
   </form>
+  <br>
+  <br>
+  <br>
+  <br>
 {% endblock base_content %}

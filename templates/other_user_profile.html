@@ -43,13 +43,13 @@
 </div>
 <div style="text-align: left; display:inline-block; width:70%;">
     <p style="color:black; font-size: 1em;"> Rating: {{ rating_message }}</p>
-    {% if rating_list %}
-    {% for i in full_stars %}
-    <span style="font-size:250%;color:yellow;">&starf;</span>
-    {% endfor %}
-    {% for i in empty_stars %}
-    <span style="font-size:250%;color:yellow;">&star;</span>
-    {% endfor %}
+<!--    {% if rating_list %}-->
+<!--    {% for i in full_stars %}-->
+<!--    <span style="font-size:250%;color:yellow;">&starf;</span>-->
+<!--    {% endfor %}-->
+<!--    {% for i in empty_stars %}-->
+<!--    <span style="font-size:250%;color:yellow;">&star;</span>-->
+<!--    {% endfor %}-->
     <br>
     <a href="{{ url_for('see_all_ratings', user=owner) }}" style="color: black;font-size:10px;">
         <u> See all ratings </u>
@@ -73,9 +73,9 @@
         <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>
     </form>
     --->
-    <form action="{{ url_for('user_rating', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>
-    </form>
+<!--    <form action="{{ url_for('user_rating', user=owner) }}">-->
+<!--        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>-->
+<!--    </form>-->
     <form action="{{ url_for('report_user', user=owner) }}">
         <button class="button2" type="submit" style="margin-right: 30px;"> Report {{ owner }}</button>
     </form>

@@ -129,10 +129,6 @@ def post_timeout(date):
                             day=date.day,
                            )
 
-    print(currentDate)
-    print(dateDatetime)
-    print((currentDate - dateDatetime).days)
-
     return (currentDate - dateDatetime).days >= 90
 
 
@@ -175,8 +171,8 @@ def index():
     if not posts_type:
         posts_type = "all"
 
-    print(posts_type)
-    print(category)
+    if not condition:
+        condition = "all"
 
     if posts_type == "all" or posts_type == "request":
         if category:
@@ -203,10 +199,8 @@ def index():
                 forward = geocoder.geocode(post_obj.location)
                 try:
                     post_obj.lng = forward[0]['geometry']['lng']
-                    print("REQ HERE")
                     post_obj.lat = forward[0]['geometry']['lat']
                     query = "update requests set lat = " + str(post_obj.lat) + ", lng = " + str(post_obj.lng) + " where id = " + str(post_obj.id) + " ;"
-                    print(query)
                     cur.execute(query)
                 except:
                     continue
@@ -237,19 +231,14 @@ def index():
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")
-            print("donation id = " + str(post_obj.id))
             if not post_obj.lat:
-
                 forward = geocoder.geocode(post_obj.location)
                 try:
                     post_obj.lng = forward[0]['geometry']['lng']
-                    print("DON HERE")
                     post_obj.lat = forward[0]['geometry']['lat']
                     query = "update donations set lat = " + str(post_obj.lat) + ", lng = " + str(post_obj.lng) + " where id = " + str(post_obj.id) + " ;"
-                    print(query)
                     cur.execute(query)
                 except:
-                    print("continue exception for donation id = " + str(post_obj.id))
                     continue
             if condition == "all" or post_obj.condition == condition:
                 if not location or in_range(lng_location, lat_location, post_obj.lat, post_obj.lng, location_range):
@@ -258,9 +247,9 @@ def index():
                             if not post_timeout(post_obj.date):
                                 posts_with_types.append({"post": post_obj, "type": "Donation"})
 
-    for post_with_type in posts_with_types:
-        print(post_with_type)
-        print("\n")
+    # for post_with_type in posts_with_types:
+    #     print(post_with_type)
+    #     print("\n")
 
     conn.commit()
     cur.close()

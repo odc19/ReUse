@@ -25,7 +25,10 @@
         background-color: #C4A874;
     }
 
-
+#div1 {
+  font-size:24px;
+  color: rgb(255,255,0);
+}
 
 
 </style>
@@ -72,12 +75,31 @@
         <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>
     </form>
     --->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<body>
+
     <form action="{{ url_for('user_rating', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!</button>
+       <button class="button2" type="submit" style="margin-right: 30px;">  Leave a rating! <div id="div1" class="fa"></div> </button>
     </form>
     <form action="{{ url_for('report_user', user=owner) }}">
         <button class="button2" type="submit" style="margin-right: 30px;"> Report {{ owner }}</button>
     </form>
+    <script>
+function ratestar() {
+  var a;
+  a = document.getElementById("div1");
+  a.innerHTML = "&#xf006;";
+  setTimeout(function () {
+      a.innerHTML = "&#xf123;";
+    }, 1000);
+  setTimeout(function () {
+      a.innerHTML = "&#xf005;";
+    }, 2000);
+}
+ratestar();
+setInterval(ratestar, 3000);
+</script>
     <br>
     <br>
     <br>

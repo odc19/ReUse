@@ -251,7 +251,7 @@ def index():
                 except:
                     print("continue exception for donation id = " + str(post_obj.id))
                     continue
-            if not condition or post_obj.condition == condition:
+            if condition == "all" or post_obj.condition == condition:
                 if not location or in_range(lng_location, lat_location, post_obj.lat, post_obj.lng, location_range):
                     if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
                         if see_reserved_posts == "yes" or not post_obj.reserved:

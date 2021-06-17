@@ -44,8 +44,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
 
 req_table = "requests"
 don_table = "donations"
-req_fields = "id, person_id, title, category, description, location, reserved, date, charity"
-don_fields = "id, person_id, title, category, description, location, reserved, date, charity, condition, condition_description"
+req_fields = "id, person_id, title, category, description, location, reserved, date, charity, lat, lng"
+don_fields = "id, person_id, title, category, description, location, reserved, date, charity, lat, lng, condition, condition_description"
 
 
 def init_table_posts():
@@ -101,24 +101,21 @@ def make_post_class(query_post, post_type):
     reserved = query_post[6]
     date = query_post[7]
     is_charity = query_post[8]
+    lat = query_post[9]
+    lng = query_post[10]
 
     if post_type == "Donation":
-        condition = query_post[9]
-        condition_description = query_post[10]
+        condition = query_post[11]
+        condition_description = query_post[12]
         return post_donation(post_id, person_id, title, category, description, location, reserved, date, is_charity,
-                             condition, condition_description)
+                             condition, condition_description, lat, lng)
     else:
-        return post_request(post_id, person_id, title, category, description, location, reserved, date, is_charity)
+        return post_request(post_id, person_id, title, category, description, location, reserved, date, is_charity, lat, lng)
 
 
-def in_range(lng_location, lat_location, location2, location_range):
+def in_range(lng_location, lat_location, lat_post, lng_post, location_range):
     try:
-        forward = geocoder.geocode(location2)
-        lng = forward[0]['geometry']['lng']
-        lat = forward[0]['geometry']['lat']
-        print(lng_location)
-        print(lat_location)
-        return haversine((lng_location, lat_location), (lng, lat)) <= int(location_range)
+        return haversine((lng_location, lat_location), (lng_post, lat_post)) <= int(location_range)
     except:
         return False
 
@@ -167,6 +164,8 @@ def index():
         forward = geocoder.geocode(location)
         lng_location = forward[0]['geometry']['lng']
         lat_location = forward[0]['geometry']['lat']
+    if not location_range:
+        location_range = 4
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
@@ -200,7 +199,18 @@ def index():
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Request")
-            if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
+            if not post_obj.lat:
+                forward = geocoder.geocode(post_obj.location)
+                try:
+                    post_obj.lng = forward[0]['geometry']['lng']
+                    print("REQ HERE")
+                    post_obj.lat = forward[0]['geometry']['lat']
+                    query = "update requests set lat = " + str(post_obj.lat) + ", lng = " + str(post_obj.lng) + " where id = " + str(post_obj.id) + " ;"
+                    print(query)
+                    cur.execute(query)
+                except:
+                    continue
+            if not location or in_range(lng_location, lat_location, post_obj.lat, post_obj.lng, location_range):
                 if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
                     if see_reserved_posts == "yes" or not post_obj.reserved:
                         if not post_timeout(post_obj.date):
@@ -227,8 +237,22 @@ def index():
         posts = cur.fetchall()
         for post in posts:
             post_obj = make_post_class(post, "Donation")
-            if not condition or post_obj.condition == condition or in_range(post_obj.location, location, location_range):
-                if not location or in_range(lng_location, lat_location, post_obj.location, location_range):
+            print("donation id = " + str(post_obj.id))
+            if not post_obj.lat:
+
+                forward = geocoder.geocode(post_obj.location)
+                try:
+                    post_obj.lng = forward[0]['geometry']['lng']
+                    print("DON HERE")
+                    post_obj.lat = forward[0]['geometry']['lat']
+                    query = "update donations set lat = " + str(post_obj.lat) + ", lng = " + str(post_obj.lng) + " where id = " + str(post_obj.id) + " ;"
+                    print(query)
+                    cur.execute(query)
+                except:
+                    print("continue exception for donation id = " + str(post_obj.id))
+                    continue
+            if not condition or post_obj.condition == condition:
+                if not location or in_range(lng_location, lat_location, post_obj.lat, post_obj.lng, location_range):
                     if poster == "all" or (post_obj.is_charity == "yes") == (poster == "charities"):
                         if see_reserved_posts == "yes" or not post_obj.reserved:
                             if not post_timeout(post_obj.date):
@@ -445,6 +469,9 @@ def successful_post(post_type):
     description = request.args.get('post_description')
     category = request.args.get('post_category')
     today = date.today().strftime('%Y-%m-%d')
+    forward = geocoder.geocode(location)
+    lng = forward[0]['geometry']['lng']
+    lat = forward[0]['geometry']['lat']
 
     print("\n")
     print(current_user.user_id)
@@ -461,19 +488,21 @@ def successful_post(post_type):
     print("\n")
 
     if post_type == "request":
-        cur.execute("INSERT INTO requests (person_id, title, description, category, location, date) VALUES("
+        cur.execute("INSERT INTO requests (person_id, title, description, category, location, date, lat, lng) VALUES("
                     + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
                     + category + "', '"
                     + location + "', '"#CONVERT(datetime, '"
-                    + today + "');")
+                    + today + "', '"
+                    + str(lat) + "', '"
+                    + str(lng) + "');")
     else:
         condition = request.args.get('post_condition')
         condition_description = request.args.get('post_condition_description')
 
         cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
-                    + "condition_description, date) VALUES("
+                    + "condition_description, date, lat, lng) VALUES("
                     + str(current_user.user_id) + ", '"
                     + title + "', '"
                     + description + "', '"
@@ -481,7 +510,9 @@ def successful_post(post_type):
                     + location + "', '"
                     + condition + "', '"
                     + condition_description + "', '"#CONVERT(datetime, '"
-                    + today + "');")
+                    + today + "', '"
+                    + str(lat) + "', '"
+                    + str(lng) + "');")
 
     conn.commit()
     conn.close()
@@ -529,10 +560,10 @@ def view_post(post_id, post_type):
 
     if post_type == "Donation":
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
 
 
 @app.route("/post_id/post_type/<type>/<description>")

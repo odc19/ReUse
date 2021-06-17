@@ -18,27 +18,50 @@
         border-radius: 2px;
         cursor: pointer;
         height:80px;
-        width:200px
+        width:300px
     }
 
     .button2:hover {
         background-color: #C4A874;
     }
 
+span {
+    font-family:arial;
+    font-size:20px;
+}
+
 
 </style>
 {% endblock header %}
 
 {% block base_content %}
-<div style="text-align: center; font-size: 2em; color:black; ">
-    You've rated {{ owner }}: '{{ message }}'.
-    <br>
-    The description provided:
-    <br>
-    <i> '{{ description }}'. </i>
-    <br>
-    <br>
-    <br>
-    We will check the request and take the corresponding actions.
+<div style="text-align: left; font-size: 1em; color:black; ">
+    <button onclick="goBack()" class="button2" ><span> &laquo; </span> Back to profile</button>
+    <script>
+
+function goBack() {
+  window.history.go(-2);
+}
+
+    </script>
 </div>
+<br>
+<br>
+<br>
+<div style="text-align: center; font-size: 1em; color:black; ">
+    <span> &#10003 </span> Thank you for rating {{ owner }}.
+    <br>
+    Message provided: <i> {{ message }} </i>.
+    <br>
+    <br>
+    <br>
+    <br>
+    We really appreciate you taking the time to share your rating with us.
+    <br>
+    Other users will benefit from your feedback.
+    <br>
+    <br>
+    <br>
+</div>
+
 {% endblock base_content %}

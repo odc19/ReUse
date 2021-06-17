@@ -57,6 +57,7 @@
 
      var marker = new mapboxgl.Marker(elem);
      marker.setLngLat([{{lng}}, {{lat}}]);
+     marker.setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"));
 
      marker.addTo(map);
     </script>

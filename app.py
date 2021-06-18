@@ -161,7 +161,7 @@ def index():
         lng_location = forward[0]['geometry']['lng']
         lat_location = forward[0]['geometry']['lat']
     if not location_range:
-        location_range = 4
+        location_range = 8
 
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()

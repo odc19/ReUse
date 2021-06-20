@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}
-<meta charset="UTF-8" xmlns="http://www.w3.org/1999/html" http-equiv="refresh" content="5">
+<meta charset="UTF-8" xmlns="http://www.w3.org/1999/html" http-equiv="refresh" content="15">
 <title>Messages!</title>
 <style>
     body {
@@ -39,7 +39,7 @@ body {
 .container {
   border: 2px solid #dedede;
   background-color: #f1f1f1;
-  border-radius: 5px;
+  border-radius: 20px;
   max-width: 800px;
   padding: 10px;
   margin: 10px 0;
@@ -56,20 +56,6 @@ body {
   display: table;
 }
 
-.container img {
-  float: left;
-  max-width: 60px;
-  width: 100%;
-  margin-right: 20px;
-  border-radius: 50%;
-}
-
-.container img.right {
-  float: right;
-  margin-left: 20px;
-  margin-right:0;
-}
-
 .name-right {
   float: right;
   color: #aaa;
@@ -82,46 +68,21 @@ body {
 
 </style>
 {% endblock header %}
-
 {% block base_content %}
-<!---
-<div class="container">
-   <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;">
-    <p style="color: black; text-align:right; ">Hello. How are you today?</p>
-    <p style="font-size: 1em; text-align:right; color: orange;"> me </p>
-     <span class="time-right">11:00</span>
-</div>
-
-<div class="container darker">
-     <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="right" style="width:100%;">
-    <p style="color: black; text-align:left; ">Hey! I'm fine. Thanks for asking!</p>
-    <p style="font-size: 1em; text-align:left; color: orange;"> {{ sender }} </p>
-</div>
-
-<div class="container">
-   <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;">
-    <p style="color: black; text-align:right;">Sweet! So, what do you wanna do today?</p>
-    <p style="font-size: 1em; text-align:right; color: orange;"> me </p>
-     <span class="time-right">11:02</span>
-</div>
-
-<div class="container darker">
-     <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="right" style="width:100%;">
-    <p style="color: black; text-align:left; ">Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>
-    <p style="font-size: 1em; text-align:left; color: orange;"> {{ sender }} </p>
-      <span class="time-left">11:05</span>
-</div>
---->
+    <div style="color: black; text-align: center; font-size: 2em;" >
+        My messages with {{ sender }}:
+        <br>
+        <br>
+    </div>
     {% for message in all_messages %}
         {% if message['message_obj']['sender_id'] == sender_id %}
         <div class="container">
-            <p style="color: black; text-align:right; "> {{ message['message_obj']['message'] }} </p>
-            <p style="font-size: 1em; text-align:right; color: orange;"> {{ message['message_obj']['sender_id'] }} </p>
+            <p style="color: black; text-align:left; "> {{ message['message_obj']['message'] }} </p>
         </div>
         {% else %}
         <div class="container darker">
+            <p style="font-size: 0.8em; text-align:left; color: orange;"> <i> {{ sender }}: </i>  </p>
             <p style="color: black; text-align:left; "> {{ message['message_obj']['message'] }} </p>
-            <p style="font-size: 1em; text-align:left; color: orange;"> {{ message['message_obj']['sender_id'] }} </p>
         </div>
         {% endif %}
     {% endfor %}
@@ -129,8 +90,7 @@ body {
 <br>
 <div style="text-align: center; color:black; ">
     <form action="{{ url_for('send_message', user=sender)}}" method="post">
-        <input type="text" id="message" name="message">
-        <!--- <button class="button" type="submit" style="margin-right: 30px;"> Send!</button> --->
+        <input type="text" id="message" name="message" size="50">
         <button class="button" type="submit" style="background-color: rgb(208, 225, 206);"> Send message! </button>
     </form>
 </div>

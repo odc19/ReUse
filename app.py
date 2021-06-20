@@ -11,6 +11,7 @@ from datetime import date
 
 from rating import rating_class
 from message import message_class
+from conversation import conv_class
 from post import post_donation, post_request
 from models import User
 
@@ -810,6 +811,27 @@ def my_requests():
 def my_posts():
     return render_template("index.html")
 
+@app.route("/my_messages")
+def my_messages():
+    cur_user_id = current_user.user_id
+    conn, cur = connect_to_db()
+    cur.execute("select distinct users.id, users.name from all_messages inner join users on "
+              +  "all_messages.receiver = users.id and all_messages.sender = " + str(current_user.user_id)
+              +  " or all_messages.sender = users.id and all_messages.receiver = " + str(current_user.user_id) + ";")
+
+    my_convs = []
+    convs = cur.fetchall()
+
+    for c in convs:
+        conv_obj = conv_class(c[0], c[1])
+        my_convs.append({"conv_obj": conv_obj})
+
+    print(my_convs)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return render_template("my_messages.html", cur_user_name=current_user.name, convs=my_convs)
 
 @app.route("/activated_post/<my_post_id>/<my_post_type>")
 def activated_post(my_post_id, my_post_type):

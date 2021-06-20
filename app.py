@@ -450,6 +450,22 @@ def new_donation():
     return render_template("new_donation.html")
 
 
+@app.route("/successful_profile_picture_upload", methods=['GET', 'POST'])
+def successful_profile_picture_upload():
+    conn, cur = connect_to_db()
+
+    profile_picture = request.files['profile_picture']
+    profile_picture_string_with_b = str(base64.b64encode(profile_picture.read()))
+    profile_picture_string = profile_picture_string_with_b[2:(len(profile_picture_string_with_b) - 1)]
+
+    cur.execute("UPDATE users set profile_picture = '" + profile_picture_string + "' WHERE id = " + str(current_user.user_id))
+
+    conn.commit()
+    conn.close()
+    cur.close()
+    return render_template("successful_profile_picture_upload.html")
+
+
 @app.route("/successful_post_<post_type>", methods=['POST'])
 def successful_post(post_type):
     conn, cur = connect_to_db()
@@ -705,7 +721,18 @@ def login_post():
 @app.route("/profile")
 @login_required
 def profile():
-    return render_template('profile.html', name=current_user.name, email=current_user.email)
+    conn, cur = connect_to_db()
+
+    cur.execute("SELECT profile_picture FROM users WHERE id = " + str(current_user.user_id))
+
+    profile_picture = cur.fetchone()[0]
+    if profile_picture is None:
+        profile_picture = "No profile picture"
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    return render_template('profile.html', name=current_user.name, email=current_user.email, profile_picture=profile_picture)
 
 
 @app.route("/logout")

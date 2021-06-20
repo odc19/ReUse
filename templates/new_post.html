@@ -59,7 +59,7 @@
         </select>
         <br>
         {% block extra_fields %}{% endblock extra_fields %}
-        <input id="photo" type="file" name="photo" placeholder="Upload a photo" required="" capture>
+        <input id="photos" type="file" name="photos" placeholder="Upload photos" required="" capture multiple>
         <br>
         <button class="button" type="submit"> {% block post_button %}{% endblock post_button %} </button>
     </form>

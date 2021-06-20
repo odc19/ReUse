@@ -475,9 +475,13 @@ def successful_post(post_type):
     description = request.form.get('post_description')
     category = request.form.get('post_category')
 
-    photo = request.files['photo']
-    photo_string_with_b = str(base64.b64encode(photo.read()))
-    photo_string = photo_string_with_b[2:(len(photo_string_with_b) - 1)]
+    photos = request.files.getlist('photos')
+
+    photo_strings = []
+    for photo in photos:
+        photo_string_with_b = str(base64.b64encode(photo.read()))
+        photo_string = photo_string_with_b[2:(len(photo_string_with_b) - 1)]
+        photo_strings.append(photo_string)
 
     today = date.today().strftime('%Y-%m-%d')
     forward = geocoder.geocode(location)
@@ -504,7 +508,8 @@ def successful_post(post_type):
                     + "' AND lat = " + str(lat)
                     + " AND lng = " + str(lng))
         post_id = cur.fetchone()[0]
-        cur.execute("INSERT INTO requests_images (request_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
+        for photo_string in photo_strings:
+            cur.execute("INSERT INTO requests_images (request_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
     else:
         condition = request.form.get('post_condition')
         condition_description = request.form.get('post_condition_description')
@@ -533,7 +538,8 @@ def successful_post(post_type):
                     + "' AND lat = " + str(lat)
                     + " AND lng = " + str(lng))
         post_id = cur.fetchone()[0]
-        cur.execute("INSERT INTO donations_images (donation_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
+        for photo_string in photo_strings:
+            cur.execute("INSERT INTO donations_images (donation_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
 
     conn.commit()
     conn.close()

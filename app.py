@@ -478,7 +478,17 @@ def successful_post(post_type):
                     + today + "', '"
                     + str(lat) + "', '"
                     + str(lng) + "');")
-        cur.execute("INSERT INTO requests_images (request_id, image) VALUES(1, '" + photo_string + "');")
+        cur.execute("SELECT id from requests WHERE"
+                    + " person_id = " + str(current_user.user_id)
+                    + " AND title = '" + title
+                    + "' AND description = '" + description
+                    + "' AND category = '" + category
+                    + "' AND location = '" + location
+                    + "' AND date = '" + today
+                    + "' AND lat = " + str(lat)
+                    + " AND lng = " + str(lng))
+        post_id = cur.fetchone()[0]
+        cur.execute("INSERT INTO requests_images (request_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
     else:
         condition = request.form.get('post_condition')
         condition_description = request.form.get('post_condition_description')
@@ -495,7 +505,19 @@ def successful_post(post_type):
                     + today + "', '"
                     + str(lat) + "', '"
                     + str(lng) + "');")
-        cur.execute("INSERT INTO donations_images (donation_id, image) VALUES(1, '" + str(photo_string) + "');")
+        cur.execute("SELECT id from donations WHERE"
+                    + " person_id = " + str(current_user.user_id)
+                    + " AND title = '" + title
+                    + "' AND description = '" + description
+                    + "' AND category = '" + category
+                    + "' AND location = '" + location
+                    + "' AND condition = '" + condition
+                    + "' AND condition_description = '" + condition_description
+                    + "' AND date = '" + today
+                    + "' AND lat = " + str(lat)
+                    + " AND lng = " + str(lng))
+        post_id = cur.fetchone()[0]
+        cur.execute("INSERT INTO donations_images (donation_id, image) VALUES(" + str(post_id) + ", '" + photo_string + "');")
 
     conn.commit()
     conn.close()
@@ -510,10 +532,10 @@ def view_post(post_id, post_type):
 
     if post_type == "Donation":
         table = don_table
-        cur.execute("SELECT " + don_fields + " FROM " + table + " WHERE id = " + post_id + ";")
+        cur.execute("SELECT " + don_fields + " FROM " + table + " WHERE id = " + str(post_id) + ";")
     else:
         table = req_table
-        cur.execute("SELECT " + req_fields + " FROM " + table + " WHERE id = " + post_id + ";")
+        cur.execute("SELECT " + req_fields + " FROM " + table + " WHERE id = " + str(post_id) + ";")
     post = cur.fetchone()
     post_obj = make_post_class(post, post_type)
 
@@ -537,11 +559,15 @@ def view_post(post_id, post_type):
 
     if post_type == 'Donation':
         cur.execute("SELECT image FROM donations_images "
-                    + "INNER JOIN donations ON donations_images.donation_id = 1")
+                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + post_id)
     else:
         cur.execute("SELECT image FROM requests_images "
-                    + "INNER JOIN requests ON requests_images.request_id = 1")
-    photo = cur.fetchone()[0]
+                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + post_id)
+    photos = cur.fetchall()
+
+    photo_strings = []
+    for photo in photos:
+        photo_strings.append(photo[0])
 
     conn.commit()
     cur.close()
@@ -549,10 +575,10 @@ def view_post(post_id, post_type):
 
     if post_type == "Donation":
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photo=photo)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photos=photo_strings)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photo=photo)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photos=photo_strings)
 
 
 @app.route("/post_id/post_type/<type>/<description>")

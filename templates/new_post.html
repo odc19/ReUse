@@ -33,7 +33,7 @@
 
 {% block base_content %}
     <h1 style="font-size: 4em;"> New {% block post_type %}{% endblock post_type %} </h1>
-    <form action={% block submit_action %}{% endblock submit_action %} method="get" style="color: black; text-align: left;">
+    <form action={% block submit_action %}{% endblock submit_action %} method="post" style="color: black; text-align: left;" enctype='multipart/form-data'>
         <label> Title: </label> <input type="text" id="post_title" name="post_title">
         <br>
         <label> Location: </label> <input type="text" id="post_location" name="post_location">
@@ -59,6 +59,8 @@
         </select>
         <br>
         {% block extra_fields %}{% endblock extra_fields %}
+        <input id="photo" type="file" name="photo" placeholder="Upload a photo" required="" capture>
+        <br>
         <button class="button" type="submit"> {% block post_button %}{% endblock post_button %} </button>
     </form>
 {% endblock base_content %}

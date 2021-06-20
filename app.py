@@ -4,6 +4,7 @@ from haversine import haversine,Unit
 from opencage.geocoder import OpenCageGeocode
 
 import psycopg2
+import base64
 from datetime import datetime
 
 from flask_bcrypt import Bcrypt
@@ -166,8 +167,6 @@ def index():
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
 
-    print("see_reserved_posts = ", see_reserved_posts)
-
     if not posts_type:
         posts_type = "all"
 
@@ -327,13 +326,14 @@ def other_user_profile(user):
         get_user_id_from_name(user)) + ";"
     cur.execute(query)
     ratings = cur.fetchall()
-    print(ratings)
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
         rating_list.append({"rating_obj": rating_obj})
+
     conn.commit()
     cur.close()
     conn.close()
+
     pos_no = get_positive_ratings(ratings)
     neu_no = get_neutral_rating(ratings)
     neg_no = get_negative_rating(ratings)
@@ -378,13 +378,14 @@ def see_all_ratings(user):
         get_user_id_from_name(user)) + ";"
     cur.execute(query)
     ratings = cur.fetchall()
-    print(ratings)
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
         rating_list.append({"rating_obj": rating_obj})
+
     conn.commit()
     cur.close()
     conn.close()
+
     return render_template("see_all_ratings.html", rating_list=rating_list, owner=user)
 
 
@@ -398,9 +399,6 @@ def finish_report_action(user):
     message_description = request.args.get("report_description")
     message_type = request.args.get("message")
     user_id = get_user_id_from_name(user)
-    print(user_id)
-    print(message_type)
-    print(message_description)
     conn, cur = connect_to_db()
     cur.execute("INSERT INTO reports (id, message_type, report_description) VALUES("
                 + str(user_id) + ", '"
@@ -452,32 +450,23 @@ def new_donation():
     return render_template("new_donation.html")
 
 
-@app.route("/successful_post_<post_type>", methods=['GET', 'POST'])
+@app.route("/successful_post_<post_type>", methods=['POST'])
 def successful_post(post_type):
     conn, cur = connect_to_db()
 
-    title = request.args.get('post_title')
-    location = request.args.get('post_location')
-    description = request.args.get('post_description')
-    category = request.args.get('post_category')
+    title = request.form.get('post_title')
+    location = request.form.get('post_location')
+    description = request.form.get('post_description')
+    category = request.form.get('post_category')
+
+    photo = request.files['photo']
+    photo_string_with_b = str(base64.b64encode(photo.read()))
+    photo_string = photo_string_with_b[2:(len(photo_string_with_b) - 1)]
+
     today = date.today().strftime('%Y-%m-%d')
     forward = geocoder.geocode(location)
     lng = forward[0]['geometry']['lng']
     lat = forward[0]['geometry']['lat']
-
-    print("\n")
-    print(current_user.user_id)
-    print("\n")
-    print(title)
-    print("\n")
-    print(description)
-    print("\n")
-    print(category)
-    print("\n")
-    print(location)
-    print("\n")
-    print(today)
-    print("\n")
 
     if post_type == "request":
         cur.execute("INSERT INTO requests (person_id, title, description, category, location, date, lat, lng) VALUES("
@@ -485,13 +474,14 @@ def successful_post(post_type):
                     + title + "', '"
                     + description + "', '"
                     + category + "', '"
-                    + location + "', '"#CONVERT(datetime, '"
+                    + location + "', '"
                     + today + "', '"
                     + str(lat) + "', '"
                     + str(lng) + "');")
+        cur.execute("INSERT INTO requests_images (request_id, image) VALUES(1, '" + photo_string + "');")
     else:
-        condition = request.args.get('post_condition')
-        condition_description = request.args.get('post_condition_description')
+        condition = request.form.get('post_condition')
+        condition_description = request.form.get('post_condition_description')
 
         cur.execute("INSERT INTO donations (person_id, title, description, category, location, condition, "
                     + "condition_description, date, lat, lng) VALUES("
@@ -501,10 +491,11 @@ def successful_post(post_type):
                     + category + "', '"
                     + location + "', '"
                     + condition + "', '"
-                    + condition_description + "', '"#CONVERT(datetime, '"
+                    + condition_description + "', '"
                     + today + "', '"
                     + str(lat) + "', '"
                     + str(lng) + "');")
+        cur.execute("INSERT INTO donations_images (donation_id, image) VALUES(1, '" + str(photo_string) + "');")
 
     conn.commit()
     conn.close()
@@ -543,19 +534,25 @@ def view_post(post_id, post_type):
     query = "SELECT reserved from " + table + " WHERE id = " + post_id + ";"
     cur.execute(query)
     reserved_person = cur.fetchone()[0]
-    print(reserved_person)
+
+    if post_type == 'Donation':
+        cur.execute("SELECT image FROM donations_images "
+                    + "INNER JOIN donations ON donations_images.donation_id = 1")
+    else:
+        cur.execute("SELECT image FROM requests_images "
+                    + "INNER JOIN requests ON requests_images.request_id = 1")
+    photo = cur.fetchone()[0]
 
     conn.commit()
-
     cur.close()
     conn.close()
 
     if post_type == "Donation":
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photo=photo)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photo=photo)
 
 
 @app.route("/post_id/post_type/<type>/<description>")
@@ -587,12 +584,10 @@ def view_my_post(my_post_id, my_post_type):
                     + "INNER JOIN users ON interested_requests.interested_id = users.id "
                     + "AND interested_requests.post_id = " + my_post_id + ";")
     interested_people = cur.fetchall()
-    print(interested_people)
 
     query = "SELECT reserved from " + table + " WHERE id = " + my_post_id + ";"
     cur.execute(query)
     reserved_person = cur.fetchone()[0]
-    print(reserved_person)
 
     conn.commit()
 
@@ -737,7 +732,6 @@ def my_donations():
     donations = cur.fetchall()
     for d in donations:
         my_donation_obj = make_post_class(d, "Donation")
-        print(my_donation_obj.description)
         if post_timeout(my_donation_obj.date):
             my_timeouted_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
         else:
@@ -763,7 +757,6 @@ def my_requests():
     requests = cur.fetchall()
     for r in requests:
         my_request_obj = make_post_class(r, "Request")
-        print(my_request_obj.description)
         if post_timeout(my_request_obj.date):
             my_timeouted_requests_with_types.append({"post": my_request_obj, "type": "Request"})
         else:
@@ -830,7 +823,6 @@ def mapview(loc):
     forward = geocoder.geocode(loc)
     lng = forward[0]['geometry']['lng']
     lat = forward[0]['geometry']['lat']
-    print(forward[0]['geometry']['lng'])
     return render_template('example.html', lng=lng, lat=lat)
 
 

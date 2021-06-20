@@ -366,24 +366,21 @@ def user_rating(user):
 
 @app.route("/post_id/post_type/user_profile_<user>/messages", methods=['GET', 'POST'])
 def send_message(user):
-    if request.method == 'POST':
-        message_sent = request.form.get("message")
-    else:
-        message_sent = "No message"
-    print(message_sent)
+    conn, cur = connect_to_db()
+    message_sent = request.form.get("message")
     if message_sent is not None:
-        print("------------ MESSAGE SENT: " + message_sent)
-    else:
-        print("NO MESSAGE!!!!!!!!!!!!!!")
+        receiver_id = get_user_id_from_name(user)
+        sender_name = current_user.name
+        sender_id = get_user_id_from_name(sender_name)
+        query = "INSERT INTO messages (sender_id, receiver_id, message) VALUES(" + str(sender_id) + ", '" + str(receiver_id) + "', '" + message_sent + "');"
+        cur.execute(query)
+        conn.commit()
+        cur.close()
+        conn.close()
+
+
     return render_template("send_message.html", sender=user)
 
-"""
-@app.route("/post_id/post_type/user_profile_<user>/messages")
-def update_messages(user):
-    message_sent = request.args.get("message")
-    print("------------ MESSAGE SENT: " + message_sent)
-    return render_template("send_message.html", sender=user)
-"""
 @app.route("/post_id/post_type/user_profile_<user>/all_ratings")
 def see_all_ratings(user):
     rating_list = []

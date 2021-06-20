@@ -10,6 +10,7 @@ from flask_bcrypt import Bcrypt
 from datetime import date
 
 from rating import rating_class
+from message import message_class
 from post import post_donation, post_request
 from models import User
 
@@ -365,21 +366,36 @@ def user_rating(user):
 
 
 @app.route("/post_id/post_type/user_profile_<user>/messages", methods=['GET', 'POST'])
+@login_required
 def send_message(user):
-    conn, cur = connect_to_db()
     message_sent = request.form.get("message")
+    message_list = []
+    receiver_id = get_user_id_from_name(user)
+    sender_name = current_user.name
+    sender_id = get_user_id_from_name(sender_name)
+
     if message_sent is not None:
-        receiver_id = get_user_id_from_name(user)
-        sender_name = current_user.name
-        sender_id = get_user_id_from_name(sender_name)
-        query = "INSERT INTO messages (sender_id, receiver_id, message) VALUES(" + str(sender_id) + ", '" + str(receiver_id) + "', '" + message_sent + "');"
+        conn, cur = connect_to_db()
+        query = "INSERT INTO all_messages (sender, receiver, message) VALUES(" + str(sender_id) + ", '" + str(receiver_id) + "', '" + message_sent + "');"
         cur.execute(query)
         conn.commit()
         cur.close()
         conn.close()
 
+    conn, cur = connect_to_db()
+    query_all_msg = "select sender, receiver, message from all_messages where (sender = " + str(sender_id) + " and receiver = " + str(
+        receiver_id) + ") or (sender = " + str(receiver_id) + " and receiver = " + str(sender_id) + "); "
+    cur.execute(query_all_msg)
+    all_messages = cur.fetchall()
 
-    return render_template("send_message.html", sender=user)
+    for message in all_messages:
+        message_obj = message_class(message[0], message[1], message[2])
+        message_list.append({"message_obj": message_obj})
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    return render_template("send_message.html", sender=user, all_messages=message_list, sender_id=sender_id, receiver_id=receiver_id)
 
 @app.route("/post_id/post_type/user_profile_<user>/all_ratings")
 def see_all_ratings(user):

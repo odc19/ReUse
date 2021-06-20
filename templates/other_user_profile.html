@@ -18,7 +18,7 @@
         border-radius: 2px;
         cursor: pointer;
         height:80px;
-        width:200px
+        width:250px
     }
 
     .button2:hover {
@@ -29,6 +29,7 @@
   font-size:24px;
   color: rgb(255,255,0);
 }
+
 
 
 
@@ -72,17 +73,21 @@
 </div>
 <div style="text-align: right; display:inline-block;">
     <form action="{{ url_for('send_message', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Send a message!</button>
+        <button class="button2" type="submit" style="margin-right: 30px;"> Send a message! <span style='font-size:20px;'> &#128232; </span>
+        </button>
     </form>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <body>
 
     <form action="{{ url_for('user_rating', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating! <div id="div1" class="fa"></div> </button>
+        <button class="button2" type="submit" style="margin-right: 30px;"> Leave a rating!
+            <div id="div1" class="fa"></div>
+        </button>
     </form>
     <form action="{{ url_for('report_user', user=owner) }}">
-        <button class="button2" type="submit" style="margin-right: 30px;">  <span> &#10071; </span> Report {{ owner }}</button>
+        <button class="button2" type="submit" style="margin-right: 30px;">Report {{ owner }} <span> &#10071; </span>
+        </button>
     </form>
     <script>
 function ratestar() {
@@ -98,7 +103,8 @@ function ratestar() {
 }
 ratestar();
 setInterval(ratestar, 3000);
-</script>
+
+    </script>
     <br>
     <br>
     <br>

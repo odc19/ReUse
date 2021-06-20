@@ -631,6 +631,18 @@ def view_my_post(my_post_id, my_post_type):
     cur.execute(query)
     reserved_person = cur.fetchone()[0]
 
+    if my_post_type == 'Donation':
+        cur.execute("SELECT image FROM donations_images "
+                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + my_post_id)
+    else:
+        cur.my_post_type("SELECT image FROM requests_images "
+                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + my_post_id)
+    photos = cur.fetchall()
+
+    photo_strings = []
+    for photo in photos:
+        photo_strings.append(photo[0])
+
     conn.commit()
 
     cur.close()
@@ -638,10 +650,12 @@ def view_my_post(my_post_id, my_post_type):
 
     if my_post_type == "Request":
         return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,
+                               photos=photo_strings)
     else:
         return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,
+                               photos=photo_strings)
 
 
 @app.route("/reserved_post/<reserved_person>/my_post_<post_id>_<post_type>")

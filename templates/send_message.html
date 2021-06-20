@@ -1,10 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Messages with {{owner}}</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block header %}
+<meta charset="UTF-8" xmlns="http://www.w3.org/1999/html">
+<title>Messages!</title>
+<style>
+    body {
+        background-color: rgb(208, 225, 206);
+        vertical-align:top;
+    }
+
+    .button2 {
+        background-color: rgb(208, 225, 206);
+        font-size : 15px;
+        padding: 10px 50px;
+        margin: 6px 0;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        height:80px;
+        width:300px
+    }
+
+    .button2:hover {
+        background-color: #C4A874;
+    }
+
+span {
+    font-family:arial;
+    font-size:20px;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.container {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  max-width: 800px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+.container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.container img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+.container img.right {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+}
+
+.name-right {
+  float: right;
+  color: #aaa;
+}
+
+.name-left {
+  float: left;
+  color: #999;
+}
+
+</style>
+{% endblock header %}
+
+{% block base_content %}
+<div class="container">
+    <!--- <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;"> --->
+    <p style="color: black; text-align:right; ">Hello. How are you today?</p>
+    <p style="font-size: 1em; text-align:right; color: orange;"> me </p>
+    <!--- <span class="time-right">11:00</span> --->
+</div>
+
+<div class="container darker">
+    <!--- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="right" style="width:100%;"> --->
+    <p style="color: black; text-align:left; ">Hey! I'm fine. Thanks for asking!</p>
+    <p style="font-size: 1em; text-align:left; color: orange;"> {{ sender }} </p>
+</div>
+
+<div class="container">
+    <!--- <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;"> --->
+    <p style="color: black; text-align:right;">Sweet! So, what do you wanna do today?</p>
+    <p style="font-size: 1em; text-align:right; color: orange;"> me </p>
+    <!--- <span class="time-right">11:02</span> --->
+</div>
+
+<div class="container darker">
+    <!--- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="right" style="width:100%;"> --->
+    <p style="color: black; text-align:left; ">Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>
+    <p style="font-size: 1em; text-align:left; color: orange;"> {{ sender }} </p>
+    <!---  <span class="time-left">11:05</span> --->
+</div>
+<div style="text-align: center; color:black; ">
+    <form action="{{ url_for('send_message', user=sender)}}" method="post">
+        <input type="text" id="message" name="message">
+        <!--- <button class="button" type="submit" style="margin-right: 30px;"> Send!</button> --->
+        <button class="button" type="submit" style="background-color: rgb(208, 225, 206);"> Send message! </button>
+    </form>
+</div>
+{% endblock base_content %}

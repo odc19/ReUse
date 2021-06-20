@@ -34,10 +34,16 @@ function goBack() {
                 <br>
                 Title: {{ my_donation_with_type['post']['title'] }}
                 <br>
-                {% if my_donation_with_type['post']['reserved'] %}
-                    <font color="red"> THIS POST IS RESERVED </font>
-                    <br>
+                {% if my_donation_with_type['post']['is_charity'] == "yes" %}
+                        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+                            <font color="red"> <i class='fas fa-hand-holding-heart' style='font-size:24px;color:red'></i> &nbsp; CHARITY </font>
+                            <br>
                 {% endif %}
+                {% if my_donation_with_type['post']['reserved'] %}
+                        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+                            <font color="green"><i class='far fa-handshake' style='font-size:24px; color: green;'></i> &nbsp; RESERVED </font>
+                            <br>
+                        {% endif %}
                 <br>
                 Description: {{ my_donation_with_type['post']['description'] }}
                 <br>
@@ -49,10 +55,6 @@ function goBack() {
                 <br>
                 Location: {{ my_donation_with_type['post']['location'] }}
                 <br>
-                {% if my_donation_with_type['post']['is_charity'] == "yes" %}
-                    <font color="red"> THIS IS A CHARITY </font>
-                    <br>
-                {% endif %}
                 <button class="button" type="submit"> View donation </button>
             </form>
         </div>

@@ -21,10 +21,6 @@
         width:300px
     }
 
-    .button2:hover {
-        background-color: #C4A874;
-    }
-
 span {
     font-family:arial;
     font-size:20px;
@@ -69,6 +65,15 @@ body {
 </style>
 {% endblock header %}
 {% block base_content %}
+<div style="text-align: left; font-size: 1em; color:black; ">
+    <button onclick="goBack()" class="button2" ><span> &laquo; </span> Back to my messages</button>
+    <script>
+
+function goBack() {
+  window.history.go(-1);
+}
+    </script>
+</div>
     <div style="color: black; text-align: center; font-size: 2em;" >
         My messages with {{ sender }}:
         <br>

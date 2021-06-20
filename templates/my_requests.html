@@ -3,6 +3,28 @@
 {% block title %} My requests {% endblock title%}
 
 {% block content %}
+<style>
+        .button2 {
+        background-color: rgb(208, 225, 206);
+        font-size : 15px;
+        padding: 10px 50px;
+        margin: 6px 0;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        height:80px;
+        width:300px
+    }
+</style>
+<div style="text-align: left; font-size: 1em; color:black; ">
+    <button onclick="goBack()" class="button2" ><span> &laquo; </span> Back to my profile</button>
+    <script>
+
+function goBack() {
+  window.history.go(-1);
+}
+    </script>
+</div>
     <h1> My requests </h1>
     <br>
     {% for my_request_with_type in my_requests_with_types %}

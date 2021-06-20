@@ -179,6 +179,9 @@ def index():
     if not poster:
         poster = "all"
 
+    if not see_reserved_posts:
+        see_reserved_posts = "yes"
+
     if posts_type == "all" or posts_type == "request":
         if category:
             query = query_2_words(first_word, category, req_table, "description", "category")

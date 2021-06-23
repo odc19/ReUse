@@ -31,7 +31,25 @@ Profile
   </font>
   <br>
   <br>
-<div style="text-align: center; ">
+  <form action="{{ url_for('successful_profile_picture_upload') }}" method="post" style="color: black;" enctype='multipart/form-data'>
+    {% if profile_picture != "No profile picture" %}
+      <img style="height:5em" src="data:image/png;base64, {{ profile_picture }}" alt="Couldn't load profile picture"/>
+      <br>
+    {% endif %}
+    <input id="profile_picture" type="file" name="profile_picture" placeholder="Upload a profile picture" required="" capture>
+    <button class="button" type="submit"> Save profile picture </button>
+  </form>
+  <br>
+  <br>
+  {% if profile_picture %}
+    <img src="">
+  {% else %}
+    <form>
+      <input>
+    </form>
+  {% endif %}
+  <br>
+  <br>
   <form action="{{ url_for('my_donations') }}">
     <button class="button" type="submit"> My donations </button>
   </form>

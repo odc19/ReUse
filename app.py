@@ -665,7 +665,7 @@ def view_my_post(my_post_id, my_post_type):
         cur.execute("SELECT image FROM donations_images "
                     + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + my_post_id)
     else:
-        cur.my_post_type("SELECT image FROM requests_images "
+        cur.execute("SELECT image FROM requests_images "
                     + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + my_post_id)
     photos = cur.fetchall()
 

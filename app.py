@@ -20,14 +20,9 @@ DB_NAME = "d8t87nco360qgb"
 DB_USER = "tkkjfwcewyiyyy"
 DB_PASS = "45ffc56f105bf668e1ecb8e089261e5d827cd1a43b00f069c75cbf2d2101ca99"
 
-# salt = "@:vkf7s(WO9As8xsEo2_Zsd?fzcZb."
-
 app = Flask(__name__, template_folder="./templates")
-# hashing = Hashing(app)
 bcrypt = Bcrypt(app)
 geocoder = OpenCageGeocode('432d61b9748c468c9d36f47300a8b0b0')
-#GoogleMaps(app, key="AIzaSyCde99Yr7TvjwQe7rqVYloE_4NXNAfemIo")
-# hashing.init_app(app)
 app.secret_key = 'if!9gYPfde_&)Go'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -36,13 +31,10 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
     return User.get(user_id)
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///EXAMPLE_database.db'
-
-# db = SQLAlchemy(app)
 
 req_table = "requests"
 don_table = "donations"

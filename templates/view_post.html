@@ -66,7 +66,7 @@
             {% block other_fields %}{% endblock other_fields %}
             <br>
             <br>
-            {% for photo in photos %}
+            {% for photo in post['photos'] %}
                 <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt="Couldn't load image"/>
             {% endfor %}
             <br>

@@ -86,7 +86,7 @@ def get_pos_neg_rating(message):
     return "negative"
 
 
-def make_post_class(query_post, post_type):
+def make_post_class(query_post, photo_strings, post_type):
     post_id = query_post[0]
     person_id = query_post[1]
     title = query_post[2]
@@ -103,9 +103,10 @@ def make_post_class(query_post, post_type):
         condition = query_post[11]
         condition_description = query_post[12]
         return post_donation(post_id, person_id, title, category, description, location, reserved, date, is_charity,
-                             condition, condition_description, lat, lng)
+                             condition, condition_description, lat, lng, photo_strings)
     else:
-        return post_request(post_id, person_id, title, category, description, location, reserved, date, is_charity, lat, lng)
+        return post_request(post_id, person_id, title, category, description, location, reserved, date, is_charity,
+                            lat, lng, photo_strings)
 
 
 def in_range(lng_location, lat_location, lat_post, lng_post, location_range):
@@ -193,7 +194,16 @@ def index():
         cur.execute(query)
         posts = cur.fetchall()
         for post in posts:
-            post_obj = make_post_class(post, "Request")
+            cur.execute("SELECT image FROM requests_images "
+                        + "INNER JOIN requests ON requests_images.request_id = requests.id "
+                        + "AND requests.id = " + str(post[0]))
+            photos = cur.fetchall()
+
+            photo_strings = []
+            for photo in photos:
+                photo_strings.append(photo[0])
+            post_obj = make_post_class(post, photo_strings, "Request")
+
             if not post_obj.lat:
                 forward = geocoder.geocode(post_obj.location)
                 try:
@@ -229,7 +239,16 @@ def index():
         cur.execute(query)
         posts = cur.fetchall()
         for post in posts:
-            post_obj = make_post_class(post, "Donation")
+            cur.execute("SELECT image FROM donations_images "
+                        + "INNER JOIN donations ON donations_images.donation_id = donations.id "
+                        + "AND donations.id = " + str(post[0]))
+            photos = cur.fetchall()
+
+            photo_strings = []
+            for photo in photos:
+                photo_strings.append(photo[0])
+            post_obj = make_post_class(post, photo_strings, "Donation")
+
             if not post_obj.lat:
                 forward = geocoder.geocode(post_obj.location)
                 try:
@@ -583,7 +602,6 @@ def view_post(post_id, post_type):
         table = req_table
         cur.execute("SELECT " + req_fields + " FROM " + table + " WHERE id = " + str(post_id) + ";")
     post = cur.fetchone()
-    post_obj = make_post_class(post, post_type)
 
     if post_type == "Donation":
         cur.execute("SELECT DISTINCT name, email, id FROM interested_donations "
@@ -615,16 +633,18 @@ def view_post(post_id, post_type):
     for photo in photos:
         photo_strings.append(photo[0])
 
+    post_obj = make_post_class(post, photo_strings, post_type)
+
     conn.commit()
     cur.close()
     conn.close()
 
     if post_type == "Donation":
         return render_template("view_donation.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photos=photo_strings)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
     else:
         return render_template("view_request.html", post=post_obj, owner=owner, interested_people=interested_people,
-                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng, photos=photo_strings)
+                               reserved_person=reserved_person, lat=post_obj.lat, lng=post_obj.lng)
 
 
 @app.route("/post_id/post_type/<type>/<description>")
@@ -645,7 +665,6 @@ def view_my_post(my_post_id, my_post_type):
     cur.execute("SELECT " + fields + " FROM " + table + " WHERE id = " + my_post_id + ";")
 
     my_post = cur.fetchone()
-    my_post_obj = make_post_class(my_post, my_post_type)
 
     if my_post_type == "Donation":
         cur.execute("SELECT DISTINCT name, email, users.id FROM interested_donations "
@@ -673,6 +692,8 @@ def view_my_post(my_post_id, my_post_type):
     for photo in photos:
         photo_strings.append(photo[0])
 
+    my_post_obj = make_post_class(my_post, my_post_type)
+
     conn.commit()
 
     cur.close()
@@ -680,12 +701,10 @@ def view_my_post(my_post_id, my_post_type):
 
     if my_post_type == "Request":
         return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,
-                               photos=photo_strings)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,)
     else:
         return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,
-                               photos=photo_strings)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
 
 
 @app.route("/reserved_post/<reserved_person>/my_post_<post_id>_<post_type>")
@@ -828,7 +847,15 @@ def my_donations():
 
     donations = cur.fetchall()
     for d in donations:
-        my_donation_obj = make_post_class(d, "Donation")
+        cur.execute("SELECT image FROM donations_images "
+                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + post_id)
+        photos = cur.fetchall()
+
+        photo_strings = []
+        for photo in photos:
+            photo_strings.append(photo[0])
+
+        my_donation_obj = make_post_class(d, photo_strings, "Donation")
         if post_timeout(my_donation_obj.date):
             my_timeouted_donations_with_types.append({"post": my_donation_obj, "type": "Donation"})
         else:
@@ -853,7 +880,15 @@ def my_requests():
 
     requests = cur.fetchall()
     for r in requests:
-        my_request_obj = make_post_class(r, "Request")
+        cur.execute("SELECT image FROM requests_images "
+                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + post_id)
+        photos = cur.fetchall()
+
+        photo_strings = []
+        for photo in photos:
+            photo_strings.append(photo[0])
+
+        my_request_obj = make_post_class(r, photo_strings, "Request")
         if post_timeout(my_request_obj.date):
             my_timeouted_requests_with_types.append({"post": my_request_obj, "type": "Request"})
         else:
@@ -894,6 +929,7 @@ def my_messages():
 
     return render_template("my_messages.html", cur_user_name=current_user.name, convs=my_convs)
 
+
 @app.route("/activated_post/<my_post_id>/<my_post_type>")
 def activated_post(my_post_id, my_post_type):
     today = date.today().strftime('%Y-%m-%d')
@@ -910,7 +946,20 @@ def activated_post(my_post_id, my_post_type):
     cur.execute("SELECT " + fields + " FROM " + table + " WHERE id = " + my_post_id + ";")
 
     my_post = cur.fetchone()
-    my_post_obj = make_post_class(my_post, my_post_type)
+
+    if post_type == 'Donation':
+        cur.execute("SELECT image FROM donations_images "
+                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + post_id)
+    else:
+        cur.execute("SELECT image FROM requests_images "
+                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + post_id)
+    photos = cur.fetchall()
+
+    photo_strings = []
+    for photo in photos:
+        photo_strings.append(photo[0])
+
+    my_post_obj = make_post_class(my_post, photo_strings, my_post_type)
 
     cur.execute("UPDATE " + table + " SET date = '" + today + "' WHERE id = " + my_post_id + ";")
 

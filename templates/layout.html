@@ -42,6 +42,11 @@ Home
                         <br>
                         Location: {{ post_with_type['post']['location'] }}
                         <br>
+                        {% for photo in post_with_type['post']['photos'] %}
+                            <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt="Couldn't load image"/>
+                        {% endfor %}
+                        <br>
+                        <br>
                         <button class="button" type="submit"> View post </button>
                     </form>
                 </div>

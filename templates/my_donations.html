@@ -20,9 +20,10 @@
     <button onclick="goBack()" class="button2" ><span> &laquo; </span> Back to my profile</button>
     <script>
 
-function goBack() {
-  window.history.go(-1);
-}
+    function goBack() {
+      window.history.go(-1);
+    }
+
     </script>
 </div>
     <h1> My donations </h1>
@@ -55,6 +56,10 @@ function goBack() {
                 <br>
                 Location: {{ my_donation_with_type['post']['location'] }}
                 <br>
+                {% for photo in my_donation_with_type['post']['photos'] %}
+                    <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt=" "/>
+                {% endfor %}
+                <br>
                 <button class="button" type="submit"> View donation </button>
             </form>
         </div>
@@ -85,6 +90,10 @@ function goBack() {
                 Posted on: {{ my_timeouted_donation_with_type['post']['date'] }}
                 <br>
                 Location: {{ my_timeouted_donation_with_type['post']['location'] }}
+                <br>
+                {% for photo in my_timeouted_donation_with_type['post']['photos'] %}
+                    <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt=" "/>
+                {% endfor %}
                 <br>
                 {% if my_timeouted_donation_with_type['post']['is_charity'] == "yes" %}
                     <font color="red"> THIS IS A CHARITY </font>

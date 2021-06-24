@@ -613,7 +613,7 @@ def view_post(post_id, post_type):
                     + "AND interested_requests.post_id = " + post_id + ";")
     interested_people = cur.fetchall()
 
-    cur.execute("SELECT name, email FROM users WHERE id = " + str(post_obj.person_id) + ";")
+    cur.execute("SELECT name, email FROM users WHERE id = " + str(post[1]) + ";")
     owner = cur.fetchone()
     cur.fetchall()
 
@@ -692,7 +692,7 @@ def view_my_post(my_post_id, my_post_type):
     for photo in photos:
         photo_strings.append(photo[0])
 
-    my_post_obj = make_post_class(my_post, my_post_type)
+    my_post_obj = make_post_class(my_post, photo_strings, my_post_type)
 
     conn.commit()
 
@@ -848,7 +848,7 @@ def my_donations():
     donations = cur.fetchall()
     for d in donations:
         cur.execute("SELECT image FROM donations_images "
-                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + post_id)
+                    + "INNER JOIN donations ON donations_images.donation_id = donations.id AND donations.id = " + str(d[0]))
         photos = cur.fetchall()
 
         photo_strings = []
@@ -881,7 +881,7 @@ def my_requests():
     requests = cur.fetchall()
     for r in requests:
         cur.execute("SELECT image FROM requests_images "
-                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + post_id)
+                    + "INNER JOIN requests ON requests_images.request_id = requests.id AND requests.id = " + str(r[0]))
         photos = cur.fetchall()
 
         photo_strings = []

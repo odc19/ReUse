@@ -20,9 +20,10 @@
     <button onclick="goBack()" class="button2" ><span> &laquo; </span> Back to my profile</button>
     <script>
 
-function goBack() {
-  window.history.go(-1);
-}
+    function goBack() {
+      window.history.go(-1);
+    }
+
     </script>
 </div>
     <h1> My requests </h1>
@@ -49,6 +50,10 @@ function goBack() {
             Posted on: {{ my_request_with_type['post']['date'] }}
             <br>
             Location: {{ my_request_with_type['post']['location'] }}
+            <br>
+            {% for photo in my_request_with_type['post']['photos'] %}
+                <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt=" "/>
+            {% endfor %}
             <br>
             {% if my_request_with_type['post']['is_charity'] == "yes" %}
                 <font color="red"> THIS IS A CHARITY </font>
@@ -83,6 +88,10 @@ function goBack() {
                 Posted on: {{ my_timeouted_request_with_type['post']['date'] }}
                 <br>
                 Location: {{ my_timeouted_request_with_type['post']['location'] }}
+                <br>
+                {% for photo in my_timeouted_request_with_type['post']['photos'] %}
+                    <img style="height:7em" src="data:image/png;base64, {{ photo }}" alt=" "/>
+                {% endfor %}
                 <br>
                 {% if my_timeouted_request_with_type['post']['is_charity'] == "yes" %}
                     <font color="red"> THIS IS A CHARITY </font>

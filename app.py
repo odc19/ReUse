@@ -412,6 +412,7 @@ def send_message(user):
     conn.close()
     return render_template("send_message.html", sender=user, all_messages=message_list, sender_id=sender_id, receiver_id=receiver_id)
 
+
 @app.route("/post_id/post_type/user_profile_<user>/all_ratings")
 def see_all_ratings(user):
     rating_list = []
@@ -701,7 +702,7 @@ def view_my_post(my_post_id, my_post_type):
 
     if my_post_type == "Request":
         return render_template("view_my_request.html", my_post=my_post_obj, interested_people=interested_people,
-                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type,)
+                               reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)
     else:
         return render_template("view_my_donation.html", my_post=my_post_obj, interested_people=interested_people,
                                reserved_person=reserved_person, my_post_id=my_post_id, my_post_type=my_post_type)

@@ -67,11 +67,13 @@
             <ul>
                 {% for interested_person in interested_people %}
                 <li> {{ interested_person[0] }} ; {{ interested_person[1] }}
-                    {% if not reserved_person and owner == current_user.user_id %}
-                    <button> Reserve</button>
+                    {% if not reserved_person %}
+                    <form action=" {{ url_for('reserved_post',reserved_person=interested_person[0],post_id=my_post['id'],post_type=my_post_type) }}">
+                        <button> Reserve </button>
+                    </form>
                     {% endif %}
-                    {% if reserved_person == interested_person[2]%}
-                    <font color="red"> <b> Reserved! </b> </font>
+                    {% if reserved_person == interested_person[2] %}
+                        <font color="red"> <b> Reserved! </b> </font>
                     {% endif %}
                 </li>
                 {% endfor %}

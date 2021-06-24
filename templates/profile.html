@@ -26,10 +26,6 @@ Profile
   <h1 class="title" style="color: black; ">
     Welcome, {{ name }}!
   </h1>
-  <font size="5px" color="black">
-    Email: {{ email }}
-  </font>
-  <br>
   <br>
   <form action="{{ url_for('successful_profile_picture_upload') }}" method="post" style="color: black;" enctype='multipart/form-data'>
     {% if profile_picture != "No profile picture" %}
@@ -40,6 +36,10 @@ Profile
     <button class="button" type="submit"> Save profile picture </button>
   </form>
   <br>
+  <font size="4px" color="black">
+    Email: {{ email }}
+  </font>
+  <br>
   <br>
   {% if profile_picture %}
     <img src="">
@@ -49,14 +49,13 @@ Profile
     </form>
   {% endif %}
   <br>
-  <br>
-  <form action="{{ url_for('my_donations') }}">
+  <form action="{{ url_for('my_donations') }}" style="display: inline-block;">
     <button class="button" type="submit"> My donations </button>
   </form>
-  <form action="{{ url_for('my_requests') }}">
+  <form action="{{ url_for('my_requests') }}" style="display: inline-block;">
     <button class="button" type="submit"> My requests </button>
   </form>
-  <form action="{{ url_for('my_messages') }}">
+  <form action="{{ url_for('my_messages') }}" style="display: inline-block;">
     <button class="button" type="submit"> My messages </button>
   </form>
   </div>

@@ -338,13 +338,22 @@ def other_user_profile(user):
     rating_list = []
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cur = conn.cursor()
-    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = " + str(
-        get_user_id_from_name(user)) + ";"
+    user_id = get_user_id_from_name(user)
+
+    query = "select id, rating_type, rating_description, pos_neg_type from ratings where id = " + str(user_id) + ";"
+
     cur.execute(query)
     ratings = cur.fetchall()
+
     for rating in ratings:
         rating_obj = rating_class(rating[0], rating[1], rating[2], rating[3])
         rating_list.append({"rating_obj": rating_obj})
+
+    cur.execute("SELECT profile_picture FROM users WHERE id = " + str(user_id))
+
+    profile_picture = cur.fetchone()[0]
+    if profile_picture is None:
+        profile_picture = "No profile picture"
 
     conn.commit()
     cur.close()
@@ -372,7 +381,8 @@ def other_user_profile(user):
     elif not all_no == 0:
         rating_message = str(pos_no) + "/" + str(all_no) + " positive ratings"
     return render_template("other_user_profile.html", rating_list=rating_list, full_stars=fake_full_stars_list,
-                           empty_stars=fake_empty_stars_list, rating_message=rating_message, owner=user)
+                           empty_stars=fake_empty_stars_list, rating_message=rating_message, owner=user,
+                           profile_picture=profile_picture)
 
 
 @app.route("/post_id/post_type/user_profile_<user>/rating")
